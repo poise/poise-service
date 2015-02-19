@@ -33,6 +33,13 @@ module PoiseService
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { _home_dir })
 
+    # Override configuration for this particular service
+    #
+    # @return [Hash]
+    def service_config
+      @service_config ||= node['poise-service'][service_name] || {}
+    end
+
     def provider(val=nil)
       if val && !val.is_a?(Class)
         service_provider = PoiseService::Providers.provider_for(node, val)

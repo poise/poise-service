@@ -2,3 +2,4 @@
 .kitchen.local.yml
 .vagrant/
 test/docker/
+Gemfile.lock

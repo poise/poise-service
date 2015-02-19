@@ -46,8 +46,17 @@ module PoiseService
           owner 'root'
           group 'root'
           mode '755'
-          source 'sysvinit.sh.erb'
-          cookbook 'poise-service'
+          if new_resource.service_config['template']
+            parts = new_resource.service_config['template'].split(/:/, 2)
+            cookbook parts[0]
+            source parts[1]
+            unless source && cookbook && !source.empty? && !cookbook.empty?
+              raise Error.new("Template override #{new_resource.service_config['template']} for #{new_resource} is invalid. Use the format 'cookbookname:templatepath'.")
+            end
+          else
+            source 'sysvinit.sh.erb'
+            cookbook 'poise-service'
+          end
           variables(
             platform_family: node['platform_family'],
             name: new_resource.service_name,
