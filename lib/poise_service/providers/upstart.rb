@@ -19,7 +19,13 @@ require 'poise_service/providers/base'
 module PoiseService
   module Providers
     class Upstart < Base
-      provides_service(:upstart)
+      poise_service_provides(:upstart)
+
+      def self.provides_auto?(node, resource)
+        # Don't allow upstart under docker, it won't work.
+        return false if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
+        service_resource_hints.include?(:upstart)
+      end
 
       private
 

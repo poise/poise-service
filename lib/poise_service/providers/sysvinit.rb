@@ -19,7 +19,11 @@ require 'poise_service/providers/base'
 module PoiseService
   module Providers
     class Sysvinit < Base
-      provides_service(:sysvinit)
+      poise_service_provides(:sysvinit)
+
+      def self.provides_auto?(node, resource)
+        [:debian, :redhat, :invokercd].any? {|name| service_resource_hints.include?(name) }
+      end
 
       private
 
@@ -46,12 +50,14 @@ module PoiseService
           owner 'root'
           group 'root'
           mode '755'
-          if new_resource.service_config['template']
-            parts = new_resource.service_config['template'].split(/:/, 2)
-            cookbook parts[0]
-            source parts[1]
-            unless source && cookbook && !source.empty? && !cookbook.empty?
-              raise Error.new("Template override #{new_resource.service_config['template']} for #{new_resource} is invalid. Use the format 'cookbookname:templatepath'.")
+          if options['template']
+            parts = options['template'].split(/:/, 2)
+            if parts.length == 2
+              source parts[1]
+              cookbook parts[0]
+            else
+              source parts.first
+              cookbook new_resource.cookbook_name.to_s
             end
           else
             source 'sysvinit.sh.erb'

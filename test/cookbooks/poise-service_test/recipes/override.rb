@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-file '/usr/bin/poise_test2' do
+file '/usr/bin/poise_test' do
   owner 'root'
   group 'root'
   mode '744'
@@ -23,6 +23,11 @@ file '/usr/bin/poise_test2' do
 sleep(1) while true
 EOH
 end
+
+poise_service 'poise_test' do
+  command '/usr/bin/poise_test'
+end
+
 
 poise_service 'poise_test2' do
   command '/usr/bin/poise_test'

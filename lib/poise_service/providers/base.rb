@@ -22,17 +22,43 @@ module PoiseService
     class Base < Chef::Provider
       include Poise
 
-      def self.provides_service(name, opts={}, &block)
-        PoiseService::Providers.provider_map.set(name.to_sym, self, opts, &block)
+      # Poise-service version of provides() to set the name and register with the map.
+      def self.poise_service_provides(val=nil, opts={}, &block)
+        if val
+          @poise_service_provider = val
+          PoiseService::Providers.provider_map.set(val.to_sym, self, opts, &block)
+        end
+        @poise_service_provider
       end
 
+      def self.provides?(node, resource)
+        return false unless resource.resource_name == :poise_service
+        provider_name = (node['poise-service'][resource.name] && node['poise-service'][resource.name]['provider']) || node['poise-service']['provider']
+        provider_name == poise_service_provides.to_s || ( provider_name == 'auto' && provides_auto?(node, resource) )
+      end
+
+      # Subclass hook to provide auto-detection for service providers.
+      #
+      # @returns [Boolean]
+      def self.provides_auto?(node, resource)
+        false
+      end
+
+      # Cache this forever because it runs a dozen or so stats every time and I call it a lot.
+      def self.service_resource_hints
+        @@service_resource_hints ||= Chef::Platform::ServiceHelpers.service_resource_providers
+      end
+
+      # Helper for subclasses to compile the sources of service-level options
+      #
+      # @returns [Hash]
       def options
-        @options ||= begin
-          opts = new_resource.options(self.class.provides_name)
+        @options ||= Chef::Mash.new.tap do |opts|
+          opts.update(new_resource.options)
+          opts.update(new_resource.options(self.class.poise_service_provides))
           if node['poise-service'][new_resource.name]
-            opts = opts.merge(node['poise-service'][new_resource.name])
+            opts.update(node['poise-service'][new_resource.name])
           end
-          opts
         end
       end
 

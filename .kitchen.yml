@@ -23,7 +23,7 @@ suites:
   - recipe[poise-service_test]
 - name: override
   run_list:
-  - recipe[poise-service_test]
+  - recipe[poise-service_test::override]
   attributes:
     poise-service:
       poise_test:

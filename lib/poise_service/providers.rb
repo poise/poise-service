@@ -15,6 +15,7 @@
 #
 
 require 'chef/node_map'
+require 'chef/platform/provider_priority_map'
 
 module PoiseService
   module Providers
@@ -30,3 +31,9 @@ end
 
 require 'poise_service/providers/sysvinit'
 require 'poise_service/providers/upstart'
+
+# Set up priority maps
+Chef::Platform::ProviderPriorityMap.instance.priority(:poise_service, [
+  PoiseService::Providers::Upstart,
+  PoiseService::Providers::Sysvinit,
+])

@@ -33,54 +33,21 @@ module PoiseService
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { _home_dir })
 
-    def options(service_type, val=nil)
-      set_or_return(:"options_#{service_type}", val, kind_of: Hash)
-    end
-
-    # Override configuration for this particular service
-    #
-    # @return [Hash]
-    def service_config
-      @service_config ||= node['poise-service'][service_name] || {}
+    def options(service_type=nil, val=nil)
+      if !val && service_type.is_a?(Hash)
+        key = :options
+        val = service_type
+      else
+        key = :"options_#{service_type}"
+      end
+      set_or_return(key, val, kind_of: Hash, default: Chef::Mash.new)
     end
 
     def provider(val=nil)
       if val && !val.is_a?(Class)
         service_provider = PoiseService::Providers.provider_for(node, val)
+        Chef::Log.debug("#{self} Checking for poise-service provider for #{val}: #{service_provider && service_provider.name}")
         val = service_provider if service_provider
-      end
-      super
-    end
-
-    def provider_for_action(action)
-      unless provider
-        # Only do all this if a specific provider isn't given, but you should never do that ...
-        provider_name = (node['poise-service'][service_name] && node['poise-service'][service_name]['provider']) || node['poise-service']['provider']
-        if provider_name == 'auto'
-          # Fire up the auto-detect logic.
-          available = Chef::Platform::ServiceHelpers.service_resource_providers
-          # Don't allow upstart under docker, it won't work.
-          available.delete(:upstart) if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
-          # These are in order of priority.
-          {
-            systemd: 'systemd',
-            upstart: 'upstart',
-            debian: 'sysvinit',
-            redhat: 'sysvinit',
-            invokercd: 'sysvinit',
-          }.each do |check_for, possible_provider_name|
-            if available.include?(check_for)
-              provider_name = possible_provider_name
-              break
-            end
-          end
-          if provider_name == 'auto'
-            # Still auto, detection failed
-            raise Error.new("Unable to determine the correct service provider for #{service_name}, please set node['poise-service']['provider'].")
-          end
-        end
-
-        provider(provider_name)
       end
       super
     end
