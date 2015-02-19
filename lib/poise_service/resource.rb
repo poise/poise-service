@@ -33,6 +33,10 @@ module PoiseService
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { _home_dir })
 
+    def options(service_type, val=nil)
+      set_or_return(:"options_#{service_type}", val, kind_of: Hash)
+    end
+
     # Override configuration for this particular service
     #
     # @return [Hash]

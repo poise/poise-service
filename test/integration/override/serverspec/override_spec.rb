@@ -24,3 +24,11 @@ end
 describe file('/etc/init.d/poise_test') do
   its(:content) { is_expected.to include 'Override script' }
 end
+
+describe service('poise_test2') do
+  it { is_expected.to be_enabled }
+end
+
+describe file('/etc/init.d/poise_test2') do
+  its(:content) { is_expected.to include 'Override script' }
+end

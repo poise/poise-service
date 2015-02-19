@@ -26,6 +26,16 @@ module PoiseService
         PoiseService::Providers.provider_map.set(name.to_sym, self, opts, &block)
       end
 
+      def options
+        @options ||= begin
+          opts = new_resource.options(self.class.provides_name)
+          if node['poise-service'][new_resource.name]
+            opts = opts.merge(node['poise-service'][new_resource.name])
+          end
+          opts
+        end
+      end
+
       def action_enable
         notifying_block do
           create_service
