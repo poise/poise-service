@@ -1,5 +1,5 @@
-Poise-service cookbook
-====================
+Poise-service
+=============
 
 [![Build Status](https://img.shields.io/travis/poise/poise-service.svg)](https://travis-ci.org/poise/poise-service)
 [![Gem Version](https://img.shields.io/gem/v/poise-service.svg)](https://rubygems.org/gems/poise-service)
