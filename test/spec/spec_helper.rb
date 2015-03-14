@@ -14,22 +14,5 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org/'
-
-ggemspec path: File.expand_path('..', __FILE__)
-
-def dev_gem(name, path: nil, github: nil)
-  path ||= File.join('..', name)
-  github ||= "#{name.include?('poise') ? 'poise' : 'coderanger'}/#{name}"
-  github = "#{github}/#{name}" unless github.include?('/')
-  path = File.expand_path(File.join('..', path), __FILE__)
-  if File.exist?(path)
-    gem name, path: path
-  else
-    gem name, github: github
-  end
-end
-
-dev_gem 'halite'
-dev_gem 'poise'
-dev_gem 'poise-boiler'
+require 'poise_boiler/spec_helper'
+require 'poise_service'

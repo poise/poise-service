@@ -3,3 +3,8 @@
 .vagrant/
 test/docker/
 Gemfile.lock
+Berksfile.lock
+coverage/
+.yardoc/
+doc/
+
