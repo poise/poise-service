@@ -32,6 +32,7 @@ module PoiseService
     attribute(:command, kind_of: String, required: true)
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { _home_dir })
+    attribute(:environment, kind_of: Hash, default: {}) # ADD TO SYSV AND UPSTART
 
     def options(service_type=nil, val=nil)
       if !val && service_type.is_a?(Hash)

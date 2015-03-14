@@ -49,7 +49,9 @@ module PoiseService
         @@service_resource_hints ||= Chef::Platform::ServiceHelpers.service_resource_providers
       end
 
-      # Helper for subclasses to compile the sources of service-level options
+      # Helper for subclasses to compile the sources of service-level options.
+      # Only used internally but has to be public for the scope-promotion in
+      # Chef::Resource to work correctly.
       #
       # @returns [Hash]
       def options
@@ -63,6 +65,7 @@ module PoiseService
       end
 
       def action_enable
+        include_recipe(*Array(recipes)) if recipes
         notifying_block do
           create_service
         end
@@ -132,6 +135,8 @@ module PoiseService
         new_resource.updated_by_last_action(true) if service_resource.updated_by_last_action?
       end
 
+      # Subclass hook to create the resource used to delegate start, stop, and
+      # restart actions.
       def service_resource
         @service_resource ||= Chef::Resource::Service.new(new_resource.service_name, run_context).tap do |r|
           r.supports(status: true, restart: true)
