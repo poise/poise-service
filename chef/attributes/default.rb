@@ -15,3 +15,5 @@
 #
 
 default['poise-service']['provider'] = 'auto'
+
+default['poise-service']['options'] = {}
