@@ -55,7 +55,7 @@ module PoiseService
       #
       # @returns [Hash]
       def options
-        @options ||= Chef::Mash.new.tap do |opts|
+        @options ||= Mash.new.tap do |opts|
           opts.update(new_resource.options)
           opts.update(node['poise-service']['options'])
           opts.update(new_resource.options(self.class.poise_service_provides))

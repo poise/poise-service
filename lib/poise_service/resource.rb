@@ -41,7 +41,7 @@ module PoiseService
       else
         key = :"options_#{service_type}"
       end
-      set_or_return(key, val, kind_of: Hash, default: Chef::Mash.new)
+      set_or_return(key, val, kind_of: Hash, default: Mash.new)
     end
 
     def provider(val=nil)
