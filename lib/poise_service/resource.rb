@@ -23,6 +23,16 @@ require 'poise_service/error'
 
 
 module PoiseService
+  # `poise_service` resource. Provides a unified service interface with a
+  # dependency injection framework.
+  #
+  # @since 1.0.0
+  # @example
+  #   poise_service 'myapp' do
+  #     command 'myapp --serve'
+  #     user 'myuser'
+  #     directory '/home/myapp'
+  #   end
   class Resource < Chef::Resource
     include Poise
     provides(:poise_service)

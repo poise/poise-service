@@ -39,6 +39,8 @@ module PoiseService
 
       # Subclass hook to provide auto-detection for service providers.
       #
+      # @param node [Chef::Node] Node to check against.
+      # @param resource [Chef::Resource] Resource to check against.
       # @returns [Boolean]
       def self.provides_auto?(node, resource)
         false
@@ -51,7 +53,7 @@ module PoiseService
 
       # Helper for subclasses to compile the sources of service-level options.
       # Only used internally but has to be public for the scope-promotion in
-      # Chef::Resource to work correctly.
+      # Chef::Resource (enclosing_provider) to work correctly.
       #
       # @returns [Hash]
       def options
