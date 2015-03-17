@@ -16,7 +16,7 @@
 
 source 'https://rubygems.org/'
 
-ggemspec path: File.expand_path('..', __FILE__)
+gemspec path: File.expand_path('..', __FILE__)
 
 def dev_gem(name, path: nil, github: nil)
   path ||= File.join('..', name)
