@@ -64,12 +64,14 @@ module PoiseService
             cookbook 'poise-service'
           end
           variables(
-            platform_family: node['platform_family'],
-            name: new_resource.service_name,
             daemon: daemon,
             daemon_options: parts[1].to_s,
-            user: new_resource.user,
+            name: new_resource.service_name,
+            new_resource: new_resource,
+            options: options,
             pid_file: "/var/run/#{new_resource.service_name}.pid",
+            platform_family: node['platform_family'],
+            user: new_resource.user,
             working_dir: new_resource.directory,
           )
         end
