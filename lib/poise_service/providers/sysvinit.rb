@@ -16,6 +16,7 @@
 
 require 'poise_service/providers/base'
 
+
 module PoiseService
   module Providers
     class Sysvinit < Base

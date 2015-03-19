@@ -17,6 +17,7 @@
 require 'chef/provider'
 require 'poise'
 
+
 module PoiseService
   module Providers
     class Base < Chef::Provider
