@@ -16,3 +16,31 @@
 
 require 'poise_boiler/spec_helper'
 require 'poise_service'
+
+
+module PoiseServiceHelper
+  def service_provider(name=nil, provider, &block)
+    provider ||= block.call if block
+    before do
+      default_attributes['poise-service'] ||= {}
+      if name
+        default_attributes['poise-service'][name] ||= {}
+        default_attributes['poise-service'][name]['provider'] = provider
+      else
+        default_attributes['poise-service']['provider'] = provider
+      end
+    end
+  end
+
+  def service_resource_hints(hints, &block)
+    hints ||= block.call if block
+    before do
+      PoiseService::Providers::Base.remove_class_variable(:@@service_resource_hints) rescue nil
+      allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return(Array(hints))
+    end
+  end
+end
+
+RSpec.configure do |config|
+  config.extend PoiseServiceHelper
+end

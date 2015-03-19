@@ -17,15 +17,8 @@
 require 'spec_helper'
 
 describe PoiseService::Resource do
-  let(:service_provider) { 'auto' }
-  let(:service_resource_providers) { %i{debian redhat upstart systemd} }
-  let(:default_attributes) do
-    {'poise-service' => {provider: service_provider}}
-  end
-  before do
-    PoiseService::Providers::Base.remove_class_variable(:@@service_resource_hints) rescue nil
-    allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return(service_resource_providers)
-  end
+  service_provider('auto')
+  service_resource_hints(%i{debian redhat upstart systemd})
 
   describe 'provider lookup' do
     let(:resolved_provider) do
@@ -38,42 +31,42 @@ describe PoiseService::Resource do
     subject { resolved_provider }
 
     context 'auto on debian' do
-      let(:service_resource_providers) { %i{debian} }
+      service_resource_hints(:debian)
       it { is_expected.to eq :sysvinit }
     end # /context auto on debian
 
     context 'auto on redhat' do
-      let(:service_resource_providers) { %i{redhat} }
+      service_resource_hints(:redhat)
       it { is_expected.to eq :sysvinit }
     end # /context auto on redhat
 
     context 'auto on upstart' do
-      let(:service_resource_providers) { %i{upstart} }
+      service_resource_hints(:upstart)
       it { is_expected.to eq :upstart }
     end # /context auto on upstart
 
     # context 'auto on systemd' do
-    #   let(:service_resource_providers) { %i{systemd} }
+    #   service_resource_hints(:systemd)
     #   it { is_expected.to eq :systemd }
     # end # /context auto on systemd
 
     context 'auto on multiple systems' do
-      let(:service_resource_providers) { %i{debian invokerd upstart} }
+      service_resource_hints(%i{debian invokerd upstart})
       it { is_expected.to eq :upstart }
     end # /context auto on multiple systems
 
     context 'global override' do
-      let(:service_provider) { 'sysvinit' }
+      service_provider('sysvinit')
       it { is_expected.to eq :sysvinit }
     end # /context global override
 
     context 'per-service override' do
-      before { default_attributes['poise-service']['test'] = {'provider' => 'sysvinit'} }
+      service_provider('test', 'sysvinit')
       it { is_expected.to eq :sysvinit }
     end # /context global override
 
     context 'per-service override for a different service' do
-      before { default_attributes['poise-service']['other'] = {'provider' => 'sysvinit'} }
+      service_provider('other', 'sysvinit')
       it { is_expected.to eq :upstart }
     end # /context global override for a different service
 
