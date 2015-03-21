@@ -14,7 +14,12 @@
 # limitations under the License.
 #
 
-file '/usr/bin/poise_test' do
+if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
+  file '/no_sysvinit'
+  return
+end
+
+file '/usr/bin/poise_test_sysvinit' do
   owner 'root'
   group 'root'
   mode '744'
@@ -24,13 +29,13 @@ sleep(1) while true
 EOH
 end
 
-poise_service 'poise_test' do
-  command '/usr/bin/poise_test'
+poise_service 'poise_test_sysvinit' do
+  command '/usr/bin/poise_test_sysvinit'
+  provider :sysvinit
 end
 
-
-poise_service 'poise_test2' do
-  command '/usr/bin/poise_test'
+poise_service 'poise_test_sysvinit2' do
+  command '/usr/bin/poise_test_sysvinit'
   provider :sysvinit
   options :sysvinit, template: 'override.sh.erb'
 end

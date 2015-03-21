@@ -17,18 +17,21 @@
 require 'serverspec'
 set :backend, :exec
 
-describe service('poise_test') do
-  it { is_expected.to be_enabled }
-end
+describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
+  describe service('poise_test_sysvinit') do
+    it { is_expected.to be_enabled }
+    it { is_expected.to be_running }
+  end
 
-describe file('/etc/init.d/poise_test') do
-  its(:content) { is_expected.to include 'Override script' }
-end
+  describe process('ruby /usr/bin/poise_test_sysvinit') do
+    it { is_expected.to be_running }
+  end
 
-describe service('poise_test2') do
-  it { is_expected.to be_enabled }
-end
+  describe service('poise_test_sysvinit2') do
+    it { is_expected.to be_enabled }
+  end
 
-describe file('/etc/init.d/poise_test2') do
-  its(:content) { is_expected.to include 'Override script' }
+  describe file('/etc/init.d/poise_test_sysvinit2') do
+    its(:content) { is_expected.to include 'Override script' }
+  end
 end
