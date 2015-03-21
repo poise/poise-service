@@ -41,7 +41,7 @@ module PoiseService
     attribute(:service_name, kind_of: String, name_attribute: true)
     attribute(:command, kind_of: String, required: true)
     attribute(:user, kind_of: String, default: 'root')
-    attribute(:directory, kind_of: String, default: lazy { _home_dir })
+    attribute(:directory, kind_of: String, default: lazy { default_directory })
     attribute(:environment, kind_of: Hash, default: {}) # ADD TO SYSV AND UPSTART
 
     def options(service_type=nil, val=nil)
@@ -65,15 +65,22 @@ module PoiseService
 
     private
 
-    # Try to find the homedir for the configured user. This will fail if
-    # nsswitch.conf was changed during this run such as with LDAP.
-    def _home_dir
-      # Force a reload in case any users were created earlier in the run.
-      Etc.endpwent
-      home = begin
-        Dir.home(user)
-      rescue ArgumentError
-        nil
+    # Try to find the home diretory for the configured user. This will fail if
+    # nsswitch.conf was changed during this run such as with LDAP. Defaults to
+    # the system root directory.
+    #
+    # @see #directory
+    # @return [String]
+    def default_directory
+      # For root we always want the system root path.
+      unless user == 'root'
+        # Force a reload in case any users were created earlier in the run.
+        Etc.endpwent
+        home = begin
+          Dir.home(user)
+        rescue ArgumentError
+          nil
+        end
       end
       # Better than nothing
       home || case node['platform_family']
