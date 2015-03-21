@@ -36,7 +36,7 @@ module PoiseService
           when 'rhel'
             Chef::Provider::Service::Init::Redhat
           else
-            # This will explode later in the template, but better than nothing for later
+            # This will explode later in the template, but better than nothing for later.
             Chef::Provider::Service::Init
           end)
         end
