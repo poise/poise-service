@@ -175,6 +175,7 @@ module PoiseService
           variables(
             command: new_resource.command,
             directory: new_resource.directory,
+            environment: new_resource.environment,
             name: new_resource.service_name,
             new_resource: new_resource,
             options: options,
