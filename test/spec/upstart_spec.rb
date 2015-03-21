@@ -23,8 +23,6 @@ describe PoiseService::Providers::Upstart do
     allow_any_instance_of(described_class).to receive(:notifying_block) {|&block| block.call }
   end
 
-  let(:chefspec_options) { { platform: 'ubuntu', version: '14.04'} }
-
   recipe do
     poise_service 'test' do
       command 'myapp --serve'
