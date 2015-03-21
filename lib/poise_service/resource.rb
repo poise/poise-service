@@ -43,6 +43,8 @@ module PoiseService
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { default_directory })
     attribute(:environment, kind_of: Hash, default: {}) # ADD TO SYSV AND UPSTART
+    attribute(:stop_signal, kind_of: [String, Symbol, Integer], default: 'TERM')
+
 
     def options(service_type=nil, val=nil)
       if !val && service_type.is_a?(Hash)
@@ -54,6 +56,15 @@ module PoiseService
       set_or_return(key, val, kind_of: Hash, default: lazy { Mash.new })
     end
 
+    # Allow setting the provider directly using the same names as the attribute
+    # settings.
+    #
+    # @param val [String, Symbol, Class, nil] Value to set the provider to.
+    # @return [Class]
+    # @example
+    #   poise_service 'myapp' do
+    #     provider :sysvinit
+    #   end
     def provider(val=nil)
       if val && !val.is_a?(Class)
         service_provider = PoiseService::Providers.provider_for(node, val)
@@ -61,6 +72,14 @@ module PoiseService
         val = service_provider if service_provider
       end
       super
+    end
+
+    # Resource DSL callback.
+    #
+    # @api private
+    def after_created
+      # Set stop_signal to a clean value.
+      stop_signal(clean_stop_signal)
     end
 
     private
@@ -88,6 +107,23 @@ module PoiseService
         ENV.fetch('SystemRoot', 'C:\\')
       else
         '/'
+      end
+    end
+
+    # Clean up a signal string/integer. Ints are mapped to the signal name,
+    # and strings are reformatted to upper case and without the SIG.
+    #
+    # @see #stop_signal
+    # @return [String]
+    def clean_stop_signal
+      if stop_signal.is_a?(Integer)
+        raise "Unknown signal #{stop_signal}" unless (0..31).include?(stop_signal)
+        Signal.signame(stop_signal)
+      else
+        short_sig = stop_signal.to_s.upcase
+        short_sig = short_sig[3..-1] if short_sig.start_with?('SIG')
+        raise "Unknown signal #{stop_signal}" unless Signal.list.include?(short_sig)
+        short_sig
       end
     end
   end

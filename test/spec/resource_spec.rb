@@ -80,4 +80,51 @@ describe PoiseService::Resource do
       it { is_expected.to eq :sysvinit }
     end # /context recipe DSL override
   end # /describe provider lookup
+
+  describe '#clean_stop_signal' do
+    let(:signal) { }
+    subject do
+      described_class.new(nil, nil).tap {|r| r.stop_signal(signal) }.send(:clean_stop_signal)
+    end
+
+    context 'with a short string' do
+      let(:signal) { 'term' }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a short string
+
+    context 'with a long string' do
+      let(:signal) { 'sigterm' }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a long string
+
+    context 'with a short string in caps' do
+      let(:signal) { 'TERM' }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a short string in caps
+
+    context 'with a long string in caps' do
+      let(:signal) { 'SIGTERM' }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a long string in caps
+
+    context 'with a number' do
+      let(:signal) { 15 }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a number
+
+    context 'with a symbol' do
+      let(:signal) { :term }
+      it { is_expected.to eq 'TERM' }
+    end # /context with a symbol
+
+    context 'with an invalid string' do
+      let(:signal) { 'nope' }
+      it { expect { subject }.to raise_error }
+    end # /context with an invalid string
+
+    context 'with an invalid number' do
+      let(:signal) { 100 }
+      it { expect { subject }.to raise_error }
+    end # /context with an invalid number
+  end # /describe #clean_stop_signal
 end
