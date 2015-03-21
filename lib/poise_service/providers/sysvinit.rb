@@ -73,6 +73,7 @@ module PoiseService
             pid_file: options['pid_file'] || "/var/run/#{new_resource.service_name}.pid",
             pid_file_external: !!options['pid_file'],
             platform_family: node['platform_family'],
+            stop_signal: new_resource.stop_signal,
             user: new_resource.user,
             working_dir: new_resource.directory,
           )

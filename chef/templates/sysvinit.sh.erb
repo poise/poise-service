@@ -22,7 +22,7 @@ _start() {
 }
 
 _stop() {
-  start-stop-daemon --stop --quiet --oknodo --pidfile "<%= @pid_file %>" --user "<%= @user %>"
+  start-stop-daemon --stop --quiet --pidfile "<%= @pid_file %>" --user "<%= @user %>" --signal "<%= @stop_signal %>"
 }
 
 _status() {
@@ -46,12 +46,14 @@ _start() {
 }
 
 _stop() {
-  killproc -p "<%= @pid_file %>" "<%= @daemon %>"
+  killproc -G -p "<%= @pid_file %>" -<%= @stop_signal%> "<%= @daemon %>"
 }
 
 _status() {
   status -p "<%= @pid_file %>" "<%= @daemon %>"
 }
+
+<%- # Some functions to match LSB because RHEL doesn't (╯°□°）╯︵ ┻━┻ -%>
 
 log_daemon_msg() {
   echo -n "$1"
