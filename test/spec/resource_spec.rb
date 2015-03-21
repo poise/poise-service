@@ -45,10 +45,10 @@ describe PoiseService::Resource do
       it { is_expected.to eq :upstart }
     end # /context auto on upstart
 
-    # context 'auto on systemd' do
-    #   service_resource_hints(:systemd)
-    #   it { is_expected.to eq :systemd }
-    # end # /context auto on systemd
+    context 'auto on systemd' do
+      service_resource_hints(:systemd)
+      it { is_expected.to eq :systemd }
+    end # /context auto on systemd
 
     context 'auto on multiple systems' do
       service_resource_hints(%i{debian invokerd upstart})
@@ -67,7 +67,7 @@ describe PoiseService::Resource do
 
     context 'per-service override for a different service' do
       service_provider('other', 'sysvinit')
-      it { is_expected.to eq :upstart }
+      it { is_expected.to eq :systemd }
     end # /context global override for a different service
 
     context 'recipe DSL override' do
