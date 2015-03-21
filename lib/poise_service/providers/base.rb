@@ -174,12 +174,12 @@ module PoiseService
           end
           variables(
             command: new_resource.command,
+            directory: new_resource.directory,
             name: new_resource.service_name,
             new_resource: new_resource,
             options: options,
             stop_signal: new_resource.stop_signal,
             user: new_resource.user,
-            working_dir: new_resource.directory,
           )
           instance_exec(&block) if block
         end

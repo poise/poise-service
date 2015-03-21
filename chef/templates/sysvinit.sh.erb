@@ -17,7 +17,7 @@
 _start() {
   start-stop-daemon --start --quiet --background \
       --pidfile "<%= @pid_file %>"<% unless @pid_file_external %> --make-pidfile<% end %> \
-      --chuid "<%= @user %>" --chdir "<%= @working_dir %>" \
+      --chuid "<%= @user %>" --chdir "<%= @directory %>" \
       --exec "<%= @daemon %>" -- <%= @daemon_options %>
 }
 
@@ -37,7 +37,7 @@ _pid () {
 }
 
 _start() {
-  ( cd "<%= @working_dir %>" && daemon --user "<%= @user %>" --pidfile "<%= @pid_file %>" "<%= @daemon %> <%= @daemon_options %>" >/dev/null 2>&1 ) &
+  ( cd "<%= @directory %>" && daemon --user "<%= @user %>" --pidfile "<%= @pid_file %>" "<%= @daemon %> <%= @daemon_options %>" >/dev/null 2>&1 ) &
 <%- unless @pid_file_external -%>
   sleep 1 # Give it some time to start before checking for a pid
   _pid "<%= @daemon %>" > "<%= @pid_file %>" || return 3

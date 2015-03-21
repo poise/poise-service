@@ -9,7 +9,7 @@ respawn
 respawn limit 10 5
 umask 022
 setuid <%= @user %>
-chdir <%= @working_dir %>
+chdir <%= @directory %>
 kill signal <%= @stop_signal %>
 
 exec <%= @command %>
