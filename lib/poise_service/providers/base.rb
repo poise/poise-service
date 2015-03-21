@@ -152,6 +152,39 @@ module PoiseService
         end
       end
 
+      def service_template(path, default_source, &block)
+        template path do
+          owner 'root'
+          group 'root'
+          mode '755'
+          if options['template']
+            # If we have a template override, allow specifying a cookbook via
+            # "cookbook:template".
+            parts = options['template'].split(/:/, 2)
+            if parts.length == 2
+              source parts[1]
+              cookbook parts[0]
+            else
+              source parts.first
+              cookbook new_resource.cookbook_name.to_s
+            end
+          else
+            source default_source
+            cookbook 'poise-service'
+          end
+          variables(
+            command: new_resource.command,
+            name: new_resource.service_name,
+            new_resource: new_resource,
+            options: options,
+            stop_signal: new_resource.stop_signal,
+            user: new_resource.user,
+            working_dir: new_resource.directory,
+          )
+          instance_exec(&block) if block
+        end
+      end
+
     end
   end
 end

@@ -43,39 +43,20 @@ module PoiseService
       end
 
       def create_service
+        # Split the command into the binary and its arguments. This is for
+        # start-stop-daemon since it treats those differently.
         parts = new_resource.command.split(/ /, 2)
         daemon = ENV['PATH'].split(/:/)
           .map {|path| ::File.absolute_path(parts[0], path) }
           .find {|path| ::File.exist?(path) } || parts[0]
-        template "/etc/init.d/#{new_resource.service_name}" do
-          owner 'root'
-          group 'root'
-          mode '755'
-          if options['template']
-            parts = options['template'].split(/:/, 2)
-            if parts.length == 2
-              source parts[1]
-              cookbook parts[0]
-            else
-              source parts.first
-              cookbook new_resource.cookbook_name.to_s
-            end
-          else
-            source 'sysvinit.sh.erb'
-            cookbook 'poise-service'
-          end
-          variables(
+        # Render the service template
+        service_template("/etc/init.d/#{new_resource.service_name}", 'sysvinit.sh.erb') do
+          variables.update(
             daemon: daemon,
             daemon_options: parts[1].to_s,
-            name: new_resource.service_name,
-            new_resource: new_resource,
-            options: options,
             pid_file: options['pid_file'] || "/var/run/#{new_resource.service_name}.pid",
             pid_file_external: !!options['pid_file'],
             platform_family: node['platform_family'],
-            stop_signal: new_resource.stop_signal,
-            user: new_resource.user,
-            working_dir: new_resource.directory,
           )
         end
       end

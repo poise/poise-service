@@ -36,19 +36,7 @@ module PoiseService
       end
 
       def create_service
-        template "/etc/init/#{new_resource.service_name}.conf" do
-          owner 'root'
-          group 'root'
-          mode '755'
-          source 'upstart.conf.erb'
-          cookbook 'poise-service'
-          variables(
-            name: new_resource.service_name,
-            command: new_resource.command,
-            user: new_resource.user,
-            working_dir: new_resource.directory,
-          )
-        end
+        service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb')
       end
 
     end
