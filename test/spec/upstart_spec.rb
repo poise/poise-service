@@ -40,8 +40,8 @@ stop on runlevel [!2345]
 respawn
 respawn limit 10 5
 umask 022
-setuid root
 chdir /
+setuid root
 kill signal TERM
 
 exec myapp --serve
