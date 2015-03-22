@@ -7,7 +7,8 @@ env:
   global:
   - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
-  - secure: qAqZWoMbemCNM51OMvNFV2KygcfD3qIT8X31hsb3ltaMjjncq94a0pLSgVOxxex92EIXdrLgTjtvvpVkWtmxz9H6wtqOWbOWXHO6sdTTUNWaRzEfhudJben8rTVSdJ7Vw/pN2Pk7OCshJCU7nAkUWQmYjXvp+qvXeKmBoQsS/EM=
+  - RACKSPACE_USERNAME=coderanger
+  - secure: XpFA4AwBW5v4o3IuwKVSCTeVr6jXsW13T6ShGPpru4q+W2Zpcwh1qyBbxkkIWlkNjbhAT7G0HzQOqYcvUssYLEUYUNSlN10hxjpTZxvVj5sGjjhS3iTXbSop0NXzQthNRHfVZeK9ZWc+zP1MHGImjGCkErkin1+vu/SwMfIl2/8=
   - secure: k36byJyrxjPXKqMjlhojJJwA3iTgVcy1z8zJzUMf0v6JGLsbLbMLfOxkTwIhuLZ3mFEQHvv0TZ8rm84Mg8pYb95fChF2rZNHasRDDB5rFBd++HaYirSC0kndXpZ5gLBhSZXggDv8ROANgKwgWmI0PDDZz96rR/tPDD7edZIvgfc=
   - secure: OZhgvnu2op+rxg6ECSYlWGwaD1xIyOhzQtxqwzA4F/59RiR667JWaSTAmdEDN6SKmrqphxmZatzDEVXLaidbzAC0yAVv7zt4JbkLLZwmLFpq0YL+128sjgI4iUXomJhLxFqZyl8xmDhbu2pZLVyIR0S5Y0VUnu4kTmKDpvBwYsA=
 before_install:
@@ -21,11 +22,6 @@ bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake spec"
 - "./bin/rake chef:foodcritic"
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then openssl rsa -in test/docker/docker.pem
-  -passin env:KITCHEN_DOCKER_PASS -out test/docker/docker.key; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then wget https://get.docker.io/builds/Linux/x86_64/docker-latest
-  -O docker; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then chmod +x docker; fi
 - if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
 gemfile:
 - test/gemfiles/chef-12.gemfile

@@ -5,4 +5,5 @@
 suites:
 - name: default
   run_list:
+  - recipe[poise-service_test]
   - recipe[poise-service_test::sysvinit]

@@ -18,7 +18,9 @@ require 'serverspec'
 set :backend, :exec
 
 describe service('poise_test') do
-  it { is_expected.to be_enabled }
+  # CentOS 6 doesn't show upstart services if chkconfig, which is how specinfra
+  # checkes what is enabled.
+  it { is_expected.to be_enabled } unless os[:family] == 'redhat' && os[:release].start_with?('6')
   it { is_expected.to be_running }
 end
 
