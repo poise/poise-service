@@ -119,12 +119,12 @@ describe PoiseService::Resource do
 
     context 'with an invalid string' do
       let(:signal) { 'nope' }
-      it { expect { subject }.to raise_error }
+      it { expect { subject }.to raise_error PoiseService::Error }
     end # /context with an invalid string
 
     context 'with an invalid number' do
       let(:signal) { 100 }
-      it { expect { subject }.to raise_error }
+      it { expect { subject }.to raise_error PoiseService::Error }
     end # /context with an invalid number
   end # /describe #clean_stop_signal
 end

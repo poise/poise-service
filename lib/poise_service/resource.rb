@@ -117,12 +117,12 @@ module PoiseService
     # @return [String]
     def clean_stop_signal
       if stop_signal.is_a?(Integer)
-        raise "Unknown signal #{stop_signal}" unless (0..31).include?(stop_signal)
+        raise Error.new("Unknown signal #{stop_signal}") unless (0..31).include?(stop_signal)
         Signal.signame(stop_signal)
       else
         short_sig = stop_signal.to_s.upcase
         short_sig = short_sig[3..-1] if short_sig.start_with?('SIG')
-        raise "Unknown signal #{stop_signal}" unless Signal.list.include?(short_sig)
+        raise Error.new("Unknown signal #{stop_signal}") unless Signal.list.include?(short_sig)
         short_sig
       end
     end
