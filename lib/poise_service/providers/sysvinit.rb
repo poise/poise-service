@@ -51,6 +51,7 @@ module PoiseService
           .find {|path| ::File.exist?(path) } || parts[0]
         # Render the service template
         service_template("/etc/init.d/#{new_resource.service_name}", 'sysvinit.sh.erb') do
+          mode '755'
           variables.update(
             daemon: daemon,
             daemon_options: parts[1].to_s,

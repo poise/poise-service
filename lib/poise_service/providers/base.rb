@@ -156,7 +156,7 @@ module PoiseService
         template path do
           owner 'root'
           group 'root'
-          mode '755'
+          mode '644'
           if options['template']
             # If we have a template override, allow specifying a cookbook via
             # "cookbook:template".
