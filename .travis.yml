@@ -22,6 +22,7 @@ bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake spec"
 - "./bin/rake chef:foodcritic"
+- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ssh-keygen -f ~/.ssh/id_rsa -b 768 -P ''; fi
 - if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
 gemfile:
 - test/gemfiles/chef-12.gemfile
