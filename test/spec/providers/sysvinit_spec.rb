@@ -19,9 +19,6 @@ require 'spec_helper'
 describe PoiseService::Providers::Sysvinit do
   service_provider('sysvinit')
   step_into(:poise_service)
-  before do
-    allow_any_instance_of(described_class).to receive(:notifying_block) {|&block| block.call }
-  end
   recipe do
     poise_service 'test' do
       command 'myapp --serve'
