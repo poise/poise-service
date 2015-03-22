@@ -8,8 +8,16 @@ stop on runlevel [!2345]
 respawn
 respawn limit 10 5
 umask 022
-setuid <%= @user %>
 chdir <%= @directory %>
+<%- unless @ancient_upstart -%>
+setuid <%= @user %>
 kill signal <%= @stop_signal %>
+<%- end -%>
 
-exec <%= @command %>
+exec <% if @ancient_upstart %>su -s /bin/sh -c 'exec "$0" "$@"' <%= @user %> -- <% end %><%= @command %>
+<%- if @ancient_upstart && @stop_signal != 'TERM' -%>
+pre-stop script
+  . /etc/rc.d/init.d/functions
+  killproc -G<% if @pid_file %> -p "<%= @pid_file %>"<% end %> -<%= @stop_signal%> "<%= @command.split(/ /, 2).first %>"
+end script
+<%- end -%>

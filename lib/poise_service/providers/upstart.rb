@@ -36,7 +36,12 @@ module PoiseService
       end
 
       def create_service
-        service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb')
+        service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb') do
+          variables.update(
+            ancient_upstart: node['platform_family'] == 'rhel' && node['platform_version'].start_with?('6'),
+            pid_file: options['pid_file'],
+          )
+        end
       end
 
     end
