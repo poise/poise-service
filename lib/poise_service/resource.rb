@@ -42,7 +42,7 @@ module PoiseService
     attribute(:command, kind_of: String, required: true)
     attribute(:user, kind_of: String, default: 'root')
     attribute(:directory, kind_of: String, default: lazy { default_directory })
-    attribute(:environment, kind_of: Hash, default: {}) # ADD TO SYSV AND UPSTART
+    attribute(:environment, kind_of: Hash, default: {})
     attribute(:stop_signal, kind_of: [String, Symbol, Integer], default: 'TERM')
 
 

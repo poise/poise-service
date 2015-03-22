@@ -11,6 +11,10 @@
 # Description: Init script for <%= @name %>
 ### END INIT INFO
 
+<%- @environment.each do |key, val| -%>
+export <%= @key %>="<%= @val %>"
+<%- end -%>
+
 <%- if @platform_family == 'debian' -%>
 . /lib/lsb/init-functions
 
