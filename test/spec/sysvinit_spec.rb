@@ -22,19 +22,55 @@ describe PoiseService::Providers::Sysvinit do
   before do
     allow_any_instance_of(described_class).to receive(:notifying_block) {|&block| block.call }
   end
-
-  let(:chefspec_options) { { platform: 'ubuntu', version: '14.04'} }
-
   recipe do
     poise_service 'test' do
       command 'myapp --serve'
     end
   end
 
-  it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
+  context 'on Ubuntu' do
+    let(:chefspec_options) { { platform: 'ubuntu', version: '14.04'} }
+
+    it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
   start-stop-daemon --start --quiet --background \
       --pidfile "/var/run/test.pid" --make-pidfile \
       --chuid "root" --chdir "/" \
       --exec "myapp" -- --serve
 EOH
+
+    context 'with an external PID file' do
+      before do
+        default_attributes['poise-service']['test'] ||= {}
+        default_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+      end
+
+      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
+  start-stop-daemon --start --quiet --background \
+      --pidfile "/tmp/pid" \
+      --chuid "root" --chdir "/" \
+      --exec "myapp" -- --serve
+EOH
+    end # /context with an external PID file
+  end # /context on Ubuntu
+
+  context 'on CentOS' do
+    let(:chefspec_options) { { platform: 'centos', version: '7.0'} }
+
+    it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+  ( cd "/" && daemon --user "root" --pidfile "/var/run/test.pid" "myapp --serve" >/dev/null 2>&1 ) &
+  sleep 1 # Give it some time to start before checking for a pid
+  _pid "myapp" > "/var/run/test.pid" || return 3
+EOH
+
+    context 'with an external PID file' do
+      before do
+        default_attributes['poise-service']['test'] ||= {}
+        default_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+      end
+
+      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+  ( cd "/" && daemon --user "root" --pidfile "/tmp/pid" "myapp --serve" >/dev/null 2>&1 ) &
+EOH
+    end # /context with an external PID file
+  end # /context on CentOS
 end
