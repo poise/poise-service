@@ -16,18 +16,26 @@
 
 include_recipe 'poise-service_test::_service'
 
-poise_service 'poise_test' do
-  command '/usr/bin/poise_test 5000'
+if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
+  file '/no_upstart'
+  return
 end
 
-poise_service 'poise_test2' do
-  command '/usr/bin/poise_test 5001'
-  environment POISE_ENV: 'default'
+poise_service 'poise_test_upstart' do
+  provider :upstart
+  command '/usr/bin/poise_test 7000'
+end
+
+poise_service 'poise_test_upstart2' do
+  provider :upstart
+  command '/usr/bin/poise_test 7001'
+  environment POISE_ENV: 'upstart'
   user 'poise'
 end
 
-poise_service 'poise_test3' do
+poise_service 'poise_test_upstart3' do
+  provider :upstart
   action [:enable, :disable]
-  command '/usr/bin/poise_test_noterm 5002'
+  command '/usr/bin/poise_test_noterm 7002'
   stop_signal 'kill'
 end

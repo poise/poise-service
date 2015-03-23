@@ -14,28 +14,29 @@
 # limitations under the License.
 #
 
+include_recipe 'poise-service_test::_service'
+
 if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
   file '/no_sysvinit'
   return
 end
 
-file '/usr/bin/poise_test_sysvinit' do
-  owner 'root'
-  group 'root'
-  mode '744'
-  content <<-EOH
-#!/opt/chef/embedded/bin/ruby
-sleep(1) while true
-EOH
-end
-
 poise_service 'poise_test_sysvinit' do
-  command '/usr/bin/poise_test_sysvinit'
   provider :sysvinit
+  command '/usr/bin/poise_test 6000'
 end
 
 poise_service 'poise_test_sysvinit2' do
-  command '/usr/bin/poise_test_sysvinit'
   provider :sysvinit
-  options :sysvinit, template: 'override.sh.erb'
+  command '/usr/bin/poise_test 6001'
+  environment POISE_ENV: 'sysvinit'
+  user 'poise'
 end
+
+poise_service 'poise_test_sysvinit3' do
+  provider :sysvinit
+  action [:enable, :disable]
+  command '/usr/bin/poise_test_noterm 6002'
+  stop_signal 'kill'
+end
+

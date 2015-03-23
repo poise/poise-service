@@ -14,24 +14,46 @@
 # limitations under the License.
 #
 
-require 'serverspec'
-set :backend, :exec
+require 'spec_helper'
 
 describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
-  describe service('poise_test_sysvinit') do
-    it { is_expected.to be_enabled }
-    it { is_expected.to be_running }
+  describe 'poise_test_sysvinit' do
+    describe service('poise_test_sysvinit') do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end
+
+    describe process('ruby /usr/bin/poise_test_sysvinit') do
+      it { is_expected.to be_running }
+    end
+
+    describe json_http('http://localhost:6000/') do
+      it { is_expected.to include({
+        'user' => 'root',
+        'directory' => '/',
+      }) }
+    end
   end
 
-  describe process('ruby /usr/bin/poise_test_sysvinit') do
-    it { is_expected.to be_running }
-  end
+  describe 'poise_test_sysvinit2' do
+    describe service('poise_test_sysvinit2') do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end
 
-  describe service('poise_test_sysvinit2') do
-    it { is_expected.to be_enabled }
-  end
+    describe json_http('http://localhost:6001/') do
+      it { is_expected.to include({
+        'user' => 'poise',
+        'directory' => '/tmp',
+        'environment' => include({'POISE_ENV' => 'sysvinit'}),
+      }) }
+    end
+  end # /describe poise_test_sysvinit2
 
-  describe file('/etc/init.d/poise_test_sysvinit2') do
-    its(:content) { is_expected.to include 'Override script' }
-  end
+  describe 'poise_test_sysvinit3' do
+    describe service('poise_test_sysvinit3') do
+      it { is_expected.to_not be_enabled }
+      it { is_expected.to_not be_running }
+    end
+  end # /describe poise_test_sysvinit3
 end

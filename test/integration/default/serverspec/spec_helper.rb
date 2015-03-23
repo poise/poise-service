@@ -14,20 +14,18 @@
 # limitations under the License.
 #
 
-include_recipe 'poise-service_test::_service'
+require 'json'
+require 'net/http'
+require 'uri'
 
-poise_service 'poise_test' do
-  command '/usr/bin/poise_test 5000'
+require 'serverspec'
+set :backend, :exec
+
+
+def http_request(uri)
+  Net::HTTP.get(URI(uri))
 end
 
-poise_service 'poise_test2' do
-  command '/usr/bin/poise_test 5001'
-  environment POISE_ENV: 'default'
-  user 'poise'
-end
-
-poise_service 'poise_test3' do
-  action [:enable, :disable]
-  command '/usr/bin/poise_test_noterm 5002'
-  stop_signal 'kill'
+def json_http(uri)
+  JSON.parse(http_request(uri))
 end

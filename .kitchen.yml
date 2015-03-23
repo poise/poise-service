@@ -7,3 +7,4 @@ suites:
   run_list:
   - recipe[poise-service_test]
   - recipe[poise-service_test::sysvinit]
+  - recipe[poise-service_test::upstart]
