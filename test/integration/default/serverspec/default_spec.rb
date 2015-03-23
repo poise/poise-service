@@ -32,7 +32,8 @@ describe 'default provider' do
       it { is_expected.to be_running }
     end
 
-    describe json_http('http://localhost:5000/') do
+    describe 'process environment' do
+      subject { json_http('http://localhost:5000/') }
       it { is_expected.to include({
         'user' => 'root',
         'directory' => '/',
@@ -46,7 +47,8 @@ describe 'default provider' do
       it { is_expected.to be_running }
     end
 
-    describe json_http('http://localhost:5001/') do
+    describe 'process environment' do
+      subject { json_http('http://localhost:5001/') }
       it { is_expected.to include({
         'user' => 'poise',
         'directory' => '/tmp',

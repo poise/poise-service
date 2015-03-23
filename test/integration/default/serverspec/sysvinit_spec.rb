@@ -27,7 +27,8 @@ describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
       it { is_expected.to be_running }
     end
 
-    describe json_http('http://localhost:6000/') do
+    describe 'process environment' do
+      subject { json_http('http://localhost:6000/') }
       it { is_expected.to include({
         'user' => 'root',
         'directory' => '/',
@@ -41,7 +42,8 @@ describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
       it { is_expected.to be_running }
     end
 
-    describe json_http('http://localhost:6001/') do
+    describe 'process environment' do
+      subject { json_http('http://localhost:6001/') }
       it { is_expected.to include({
         'user' => 'poise',
         'directory' => '/tmp',
