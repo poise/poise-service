@@ -44,6 +44,7 @@ module PoiseService
     attribute(:directory, kind_of: String, default: lazy { default_directory })
     attribute(:environment, kind_of: Hash, default: {})
     attribute(:stop_signal, kind_of: [String, Symbol, Integer], default: 'TERM')
+    attribute(:reload_signal, kind_of: [String, Symbol, Integer], default: 'HUP')
 
 
     def options(service_type=nil, val=nil)
@@ -78,8 +79,9 @@ module PoiseService
     #
     # @api private
     def after_created
-      # Set stop_signal to a clean value.
-      stop_signal(clean_stop_signal)
+      # Set signals to clean values.
+      stop_signal(clean_signal(stop_signal))
+      reload_signal(clean_signal(reload_signal))
     end
 
     private
@@ -114,15 +116,16 @@ module PoiseService
     # and strings are reformatted to upper case and without the SIG.
     #
     # @see #stop_signal
+    # @param signal [String, Symbol, Integer] Signal value to clean.
     # @return [String]
-    def clean_stop_signal
-      if stop_signal.is_a?(Integer)
-        raise Error.new("Unknown signal #{stop_signal}") unless (0..31).include?(stop_signal)
-        Signal.signame(stop_signal)
+    def clean_signal(signal)
+      if signal.is_a?(Integer)
+        raise Error.new("Unknown signal #{signal}") unless (0..31).include?(signal)
+        Signal.signame(signal)
       else
-        short_sig = stop_signal.to_s.upcase
+        short_sig = signal.to_s.upcase
         short_sig = short_sig[3..-1] if short_sig.start_with?('SIG')
-        raise Error.new("Unknown signal #{stop_signal}") unless Signal.list.include?(short_sig)
+        raise Error.new("Unknown signal #{signal}") unless Signal.list.include?(short_sig)
         short_sig
       end
     end

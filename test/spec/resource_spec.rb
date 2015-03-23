@@ -78,10 +78,10 @@ describe PoiseService::Resource do
     end # /context recipe DSL override
   end # /describe provider lookup
 
-  describe '#clean_stop_signal' do
+  describe '#clean_signal' do
     let(:signal) { }
     subject do
-      described_class.new(nil, nil).tap {|r| r.stop_signal(signal) }.send(:clean_stop_signal)
+      described_class.new(nil, nil).send(:clean_signal, signal)
     end
 
     context 'with a short string' do
