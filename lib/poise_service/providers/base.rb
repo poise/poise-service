@@ -108,6 +108,12 @@ module PoiseService
         end
       end
 
+      def action_reload
+        notify_if_service do
+          service_resource.run_action(:reload)
+        end
+      end
+
       private
 
       # Recipes to include for this provider to work. Subclasses can override.
