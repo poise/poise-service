@@ -25,7 +25,6 @@ describe PoiseService::Resource do
       poise_service 'test'
     end
     subject do
-      run_chef
       chef_run.find_resource(:poise_service, 'test').provider_for_action(:enable).class.poise_service_provides
     end
 
