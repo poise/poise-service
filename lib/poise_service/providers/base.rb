@@ -185,6 +185,7 @@ module PoiseService
             name: new_resource.service_name,
             new_resource: new_resource,
             options: options,
+            reload_signal: new_resource.reload_signal,
             stop_signal: new_resource.stop_signal,
             user: new_resource.user,
           )

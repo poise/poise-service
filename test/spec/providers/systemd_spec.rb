@@ -32,6 +32,7 @@ Description=test
 [Service]
 Environment=
 ExecStart=myapp --serve
+ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=TERM
 User=root
 WorkingDirectory=/

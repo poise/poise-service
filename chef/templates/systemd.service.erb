@@ -4,6 +4,7 @@ Description=<%= @name %>
 [Service]
 Environment=<%= @environment.map {|key, val| %Q{"#{key}=#{val}"} }.join(' ') %>
 ExecStart=<%= @command %>
+ExecReload=/bin/kill -<%= @reload_signal %> $MAINPID
 KillSignal=<%= @stop_signal %>
 User=<%= @user %>
 WorkingDirectory=<%= @directory %>
