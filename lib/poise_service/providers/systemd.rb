@@ -39,6 +39,12 @@ module PoiseService
         service_template("/etc/systemd/system/#{new_resource.service_name}.service", 'systemd.service.erb')
       end
 
+      def destroy_service
+        file "/etc/systemd/system/#{new_resource.service_name}.service" do
+          action :delete
+        end
+      end
+
     end
   end
 end

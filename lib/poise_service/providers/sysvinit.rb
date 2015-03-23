@@ -61,6 +61,13 @@ module PoiseService
           )
         end
       end
+
+      def destroy_service
+        file "/etc/init.d/#{new_resource.service_name}" do
+          action :delete
+        end
+      end
+
     end
   end
 end
