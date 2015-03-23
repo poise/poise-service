@@ -124,4 +124,17 @@ describe PoiseService::Resource do
       it { expect { subject }.to raise_error PoiseService::Error }
     end # /context with an invalid number
   end # /describe #clean_stop_signal
+
+  describe '#options' do
+    subject { chef_run.find_resource('poise_service', 'test') }
+    recipe(subject: false) do
+      poise_service 'test' do
+        options template: 'source.erb'
+        options :sysvinit, template: 'override.erb'
+      end
+    end
+
+    its(:options) { are_expected.to eq({template: 'source.erb'}) }
+    it { expect(subject.options(:sysvinit)).to eq({template: 'override.erb'}) }
+  end # /describe #options
 end

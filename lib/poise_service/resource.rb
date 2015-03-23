@@ -47,10 +47,10 @@ module PoiseService
 
 
     def options(service_type=nil, val=nil)
+      key = :options
       if !val && service_type.is_a?(Hash)
-        key = :options
         val = service_type
-      else
+      elsif service_type
         key = :"options_#{service_type}"
       end
       set_or_return(key, val, kind_of: Hash, default: lazy { Mash.new })
