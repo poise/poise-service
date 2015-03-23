@@ -79,6 +79,7 @@ module PoiseService
           home new_resource.home
           shell '/bin/false'
           system true
+          uid new_resource.uid
         end
       end
 
