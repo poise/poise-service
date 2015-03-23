@@ -70,4 +70,14 @@ EOH
 EOH
     end # /context with an external PID file
   end # /context on CentOS
+
+  context 'with action :disable' do
+    recipe do
+      poise_service 'test' do
+        action :disable
+      end
+    end
+
+    it { is_expected.to delete_file('/etc/init.d/test') }
+  end # /context with action :disable
 end

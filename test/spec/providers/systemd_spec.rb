@@ -39,4 +39,14 @@ WorkingDirectory=/
 [Install]
 WantedBy=multi-user.target
 EOH
+
+  context 'with action :disable' do
+    recipe do
+      poise_service 'test' do
+        action :disable
+      end
+    end
+
+    it { is_expected.to delete_file('/etc/systemd/system/test.service') }
+  end # /context with action :disable
 end
