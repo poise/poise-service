@@ -1,0 +1,6 @@
+--plugin classmethods
+--markup markdown
+--hide-api private
+--hide-void-return
+--tag provides:Provides
+--tag action:Actions
