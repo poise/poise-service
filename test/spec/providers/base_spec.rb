@@ -90,6 +90,7 @@ describe PoiseService::Providers::Base do
              cookbook_name: :test_cookbook,
              directory: '/cwd',
              environment: Hash.new,
+             reload_signal: 'HUP',
              service_name: 'myapp',
              stop_signal: 'TERM',
              user: 'root',
