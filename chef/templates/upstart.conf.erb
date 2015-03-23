@@ -10,7 +10,7 @@ respawn limit 10 5
 umask 022
 chdir <%= @directory %>
 <%- @environment.each do |key, val| -%>
-env <%= @key %>="<%= @val %>"
+env <%= key %>="<%= val %>"
 <%- end -%>
 <%- unless @ancient_upstart -%>
 setuid <%= @user %>

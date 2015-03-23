@@ -12,7 +12,7 @@
 ### END INIT INFO
 
 <%- @environment.each do |key, val| -%>
-export <%= @key %>="<%= @val %>"
+export <%= key %>="<%= val %>"
 <%- end -%>
 
 <%- if @platform_family == 'debian' -%>
