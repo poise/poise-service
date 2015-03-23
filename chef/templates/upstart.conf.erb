@@ -26,6 +26,6 @@ exec <% if !@upstart_features[:setuid]  %>su -s /bin/sh -c 'exec "$0" "$@"' <%= 
 <%- if !@upstart_features[:kill_signal]  && @stop_signal != 'TERM' -%>
 pre-stop script
   . /etc/rc.d/init.d/functions
-  killproc -G<% if @pid_file %> -p "<%= @pid_file %>"<% end %> -<%= @stop_signal%> "<%= @command.split(/ /, 2).first %>"
+  killproc<% if @pid_file %> -p "<%= @pid_file %>"<% end %> "<%= @command.split(/ /, 2).first %>" -<%= @stop_signal%>
 end script
 <%- end -%>
