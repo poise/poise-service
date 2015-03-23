@@ -12,13 +12,18 @@ chdir <%= @directory %>
 <%- @environment.each do |key, val| -%>
 env <%= key %>="<%= val %>"
 <%- end -%>
-<%- unless @ancient_upstart -%>
+<%- if @upstart_features[:setuid] -%>
 setuid <%= @user %>
+<%- end -%>
+<%- if @upstart_features[:kill_signal] -%>
 kill signal <%= @stop_signal %>
 <%- end -%>
+<%- if @upstart_features[:reload_signal] -%>
+reload signal <%= @reload_signal %>
+<%- end -%>
 
-exec <% if @ancient_upstart %>su -s /bin/sh -c 'exec "$0" "$@"' <%= @user %> -- <% end %><%= @command %>
-<%- if @ancient_upstart && @stop_signal != 'TERM' -%>
+exec <% if !@upstart_features[:setuid]  %>su -s /bin/sh -c 'exec "$0" "$@"' <%= @user %> -- <% end %><%= @command %>
+<%- if !@upstart_features[:kill_signal]  && @stop_signal != 'TERM' -%>
 pre-stop script
   . /etc/rc.d/init.d/functions
   killproc -G<% if @pid_file %> -p "<%= @pid_file %>"<% end %> -<%= @stop_signal%> "<%= @command.split(/ /, 2).first %>"

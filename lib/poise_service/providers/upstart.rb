@@ -14,11 +14,15 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
+
+require 'poise_service/error'
 require 'poise_service/providers/base'
 
 module PoiseService
   module Providers
     class Upstart < Base
+      include Chef::Mixin::ShellOut
       poise_service_provides(:upstart)
 
       def self.provides_auto?(node, resource)
@@ -36,9 +40,13 @@ module PoiseService
       end
 
       def create_service
+        features = upstart_features
+        if !features[:reload_signal] && new_resource.reload_signal != 'HUP'
+          raise Error.new("Upstart #{upstart_version} only supports HUP for reload, cannot use #{new_resource.reload_signal} for #{new_resource.to_s}")
+        end
         service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb') do
           variables.update(
-            ancient_upstart: node['platform_family'] == 'rhel' && node['platform_version'].start_with?('6'),
+            upstart_features: features,
             pid_file: options['pid_file'],
           )
         end
@@ -47,6 +55,28 @@ module PoiseService
       def destroy_service
         file "/etc/init/#{new_resource.service_name}.conf" do
           action :delete
+        end
+      end
+
+      def upstart_version
+        cmd = shell_out(%w{initctl --version})
+        if !cmd.error? && md = cmd.stdout.match(/upstart ([^)]+)\)/)
+          md[1]
+        else
+          '0'
+        end
+      end
+
+      def upstart_features
+        upstart_ver = Gem::Version.new(upstart_version)
+        versions_added = {
+          kill_signal: '1.3',
+          reload_signal: '1.10',
+          setuid: '1.4',
+        }
+        versions_added.inject({}) do |memo, (feature, version)|
+          memo[feature] = Gem::Requirement.create(">= #{version}").satisfied_by?(upstart_ver)
+          memo
         end
       end
 
