@@ -21,14 +21,13 @@ describe PoiseService::Resource do
   service_resource_hints(%i{debian redhat upstart systemd})
 
   describe 'provider lookup' do
-    let(:resolved_provider) do
+    recipe(subject: false) do
+      poise_service 'test'
+    end
+    subject do
       run_chef
       chef_run.find_resource(:poise_service, 'test').provider_for_action(:enable).class.poise_service_provides
     end
-    recipe do
-      poise_service 'test'
-    end
-    subject { resolved_provider }
 
     context 'auto on debian' do
       service_resource_hints(:debian)
@@ -71,12 +70,11 @@ describe PoiseService::Resource do
     end # /context global override for a different service
 
     context 'recipe DSL override' do
-      recipe do
+      recipe(subject: false) do
         poise_service 'test' do
           provider :sysvinit
         end
       end
-      subject { resolved_provider }
       it { is_expected.to eq :sysvinit }
     end # /context recipe DSL override
   end # /describe provider lookup
