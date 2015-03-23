@@ -158,7 +158,7 @@ module PoiseService
         end
       end
 
-      def service_template(path, default_source, &block)
+      def service_template(path, default_source, notifies: true, &block)
         template path do
           owner 'root'
           group 'root'
@@ -189,6 +189,11 @@ module PoiseService
             stop_signal: new_resource.stop_signal,
             user: new_resource.user,
           )
+          # Don't trigger a restart if the template doesn't already exist, this
+          # prevents restarting on the run that first creates the service.
+          if notifies && ::File.exists?(path)
+            self.notifies(:restart, new_resource)
+          end
           instance_exec(&block) if block
         end
       end
