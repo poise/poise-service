@@ -38,7 +38,7 @@ describe 'upstart provider', unless: File.exists?('/no_upstart') do
         'directory' => '/',
       }) }
     end
-  end
+  end # /describe poise_test_upstart
 
   describe 'poise_test_upstart2' do
     describe service('poise_test_upstart2') do

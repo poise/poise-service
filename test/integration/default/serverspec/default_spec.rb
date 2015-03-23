@@ -16,7 +16,6 @@
 
 require 'spec_helper'
 
-
 # CentOS 6 doesn't show upstart services in chkconfig, which is how specinfra
 # checkes what is enabled.
 old_upstart = os[:family] == 'redhat' && os[:release].start_with?('6')

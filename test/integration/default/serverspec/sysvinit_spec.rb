@@ -34,7 +34,7 @@ describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
         'directory' => '/',
       }) }
     end
-  end
+  end # /describe poise_test_sysvinit
 
   describe 'poise_test_sysvinit2' do
     describe service('poise_test_sysvinit2') do

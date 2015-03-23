@@ -34,7 +34,7 @@ describe 'systemd provider', unless: File.exists?('/no_systemd') do
         'directory' => '/',
       }) }
     end
-  end
+  end # /describe poise_test_systemd
 
   describe 'poise_test_systemd2' do
     describe service('poise_test_systemd2') do
