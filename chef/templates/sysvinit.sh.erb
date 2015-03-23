@@ -50,7 +50,11 @@ _start() {
 }
 
 _stop() {
-  killproc -G -p "<%= @pid_file %>" -<%= @stop_signal%> "<%= @daemon %>"
+  if [ -r "<%= @pid_file %>" ]; then
+    kill -<%= @stop_signal%> "$(cat "<%= @pid_file %>")"
+  else
+    killproc "<%= @daemon %>" -<%= @stop_signal%> >/dev/null
+  fi
 }
 
 _status() {
