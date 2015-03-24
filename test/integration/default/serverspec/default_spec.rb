@@ -61,5 +61,10 @@ describe 'default provider' do
       it { is_expected.to_not be_enabled }
       it { is_expected.to_not be_running }
     end
+
+    describe 'process environment' do
+      subject { json_http('http://localhost:5002/') }
+      it { expect { subject }.to raise_error }
+    end
   end # /describe poise_test3
 end

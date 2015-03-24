@@ -57,5 +57,10 @@ describe 'upstart provider', unless: File.exists?('/no_upstart') do
       it { is_expected.to_not be_enabled }
       it { is_expected.to_not be_running }
     end
+
+    describe 'process environment' do
+      subject { json_http('http://localhost:7002/') }
+      it { expect { subject }.to raise_error }
+    end
   end # /describe poise_test_upstart3
 end
