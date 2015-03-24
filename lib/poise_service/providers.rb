@@ -29,6 +29,7 @@ module PoiseService
   end
 end
 
+require 'poise_service/providers/dummy'
 require 'poise_service/providers/systemd'
 require 'poise_service/providers/sysvinit'
 require 'poise_service/providers/upstart'
