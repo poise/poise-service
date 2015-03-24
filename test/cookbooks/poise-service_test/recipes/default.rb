@@ -14,20 +14,85 @@
 # limitations under the License.
 #
 
-include_recipe 'poise-service_test::_service'
+# Write out the scripts to run as services.
+service_script = <<-EOH
+require 'webrick'
+require 'json'
+require 'etc'
+server = WEBrick::HTTPServer.new(Port: ARGV[0] ? ARGV[0].to_i : 8000)
+server.mount_proc '/' do |req, res|
+  res.body = {
+    directory: Dir.getwd,
+    user: Etc.getpwuid(Process.uid).name,
+    group: Etc.getgrgid(Process.gid).name,
+    environment: ENV.to_hash,
+  }.to_json
+end
+EOH
 
-poise_service 'poise_test' do
-  command '/usr/bin/poise_test 5000'
+file '/usr/bin/poise_test' do
+  owner 'root'
+  group 'root'
+  mode '755'
+  content <<-EOH
+#!/opt/chef/embedded/bin/ruby
+#{service_script}
+server.start
+EOH
 end
 
-poise_service 'poise_test2' do
-  command '/usr/bin/poise_test 5001'
-  environment POISE_ENV: 'default'
-  user 'poise'
+file '/usr/bin/poise_test_noterm' do
+  owner 'root'
+  group 'root'
+  mode '755'
+  content <<-EOH
+#!/opt/chef/embedded/bin/ruby
+trap('HUP', 'IGNORE')
+trap('STOP', 'IGNORE')
+trap('TERM', 'IGNORE')
+#{service_script}
+while true
+  begin
+    server.start
+  rescue Exception
+  rescue StandardError
+  end
+end
+EOH
 end
 
-poise_service 'poise_test3' do
-  action [:enable, :disable]
-  command '/usr/bin/poise_test_noterm 5002'
-  stop_signal 'kill'
+# Create the various services.
+poise_service_user 'poise' do
+  home '/tmp'
+end
+
+poise_service_test 'default' do
+  base_port 5000
+end
+
+if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
+  file '/no_sysvinit'
+  file '/no_upstart'
+
+  poise_service_test 'systemd' do
+    service_provider :systemd
+    base_port 8000
+  end
+else
+  file '/no_systemd'
+
+  poise_service_test 'sysvinit' do
+    service_provider :sysvinit
+    base_port 6000
+  end
+
+  poise_service_test 'upstart' do
+    service_provider :upstart
+    base_port 7000
+  end
+end
+
+poise_service_test 'dummy' do
+  service_provider :dummy
+  base_port 9000
 end

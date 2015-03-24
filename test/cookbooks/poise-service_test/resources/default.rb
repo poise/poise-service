@@ -14,23 +14,7 @@
 # limitations under the License.
 #
 
-include_recipe 'poise-service_test::_service'
+default_action :run
 
-poise_service 'poise_test_dummy' do
-  provider :dummy
-  command '/usr/bin/poise_test 9000'
-end
-
-poise_service 'poise_test_dummy2' do
-  provider :dummy
-  command '/usr/bin/poise_test 9001'
-  environment POISE_ENV: 'dummy'
-  user 'poise'
-end
-
-poise_service 'poise_test_dummy3' do
-  provider :sysvinit
-  action [:enable, :disable]
-  command '/usr/bin/poise_test_noterm 9002'
-  stop_signal 'kill'
-end
+attribute :service_provider
+attribute :base_port

@@ -6,7 +6,3 @@ suites:
 - name: default
   run_list:
   - recipe[poise-service_test]
-  - recipe[poise-service_test::dummy]
-  - recipe[poise-service_test::sysvinit]
-  - recipe[poise-service_test::upstart]
-  - recipe[poise-service_test::systemd]

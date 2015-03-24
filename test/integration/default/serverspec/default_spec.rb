@@ -14,57 +14,86 @@
 # limitations under the License.
 #
 
-require 'spec_helper'
+require 'json'
+require 'net/http'
+require 'uri'
+
+require 'serverspec'
+set :backend, :exec
+
+shared_examples 'a poise_service_test' do |name, base_port, check_service=true|
+  def json_http(uri)
+    JSON.parse(Net::HTTP.get(URI(uri)))
+  end
+
+  describe 'default service' do
+    describe service("poise_test_#{name}") do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end if check_service
+
+    describe 'process environment' do
+      subject { json_http("http://localhost:#{base_port}/") }
+      it { is_expected.to include({
+        'user' => 'root',
+        'directory' => '/',
+      }) }
+    end
+  end # /describe default service
+
+  describe 'service with parameters' do
+    describe service("poise_test_#{name}2") do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end if check_service
+
+    describe 'process environment' do
+      subject { json_http("http://localhost:#{base_port+1}/") }
+      it { is_expected.to include({
+        'user' => 'poise',
+        'directory' => '/tmp',
+        'environment' => include({'POISE_ENV' => name}),
+      }) }
+    end
+  end # /describe service with parameters
+
+  describe 'noterm service' do
+    describe service("poise_test_#{name}3") do
+      it { is_expected.to_not be_enabled }
+      it { is_expected.to_not be_running }
+    end if check_service
+
+    describe 'process environment' do
+      subject { json_http("http://localhost:#{base_port+2}/") }
+      it { expect { subject }.to raise_error }
+    end
+  end # /describe noterm service
+end
 
 # CentOS 6 doesn't show upstart services in chkconfig, which is how specinfra
 # checkes what is enabled.
 old_upstart = os[:family] == 'redhat' && os[:release].start_with?('6')
 
 describe 'default provider' do
-  describe 'poise_test' do
-    describe service('poise_test') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end unless old_upstart
+  it_should_behave_like 'a poise_service_test', 'default', 5000, !old_upstart
 
-    describe process('ruby /usr/bin/poise_test') do
-      it { is_expected.to be_running }
-    end
+  describe process('ruby /usr/bin/poise_test') do
+    it { is_expected.to be_running }
+  end
+end
 
-    describe 'process environment' do
-      subject { json_http('http://localhost:5000/') }
-      it { is_expected.to include({
-        'user' => 'root',
-        'directory' => '/',
-      }) }
-    end
-  end # /describe poise_test
+describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
+  it_should_behave_like 'a poise_service_test', 'sysvinit', 6000
+end
 
-  describe 'poise_test2' do
-    describe service('poise_test2') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end unless old_upstart
+describe 'upstart provider', unless: File.exists?('/no_upstart') do
+  it_should_behave_like 'a poise_service_test', 'upstart', 7000, !old_upstart
+end
 
-    describe 'process environment' do
-      subject { json_http('http://localhost:5001/') }
-      it { is_expected.to include({
-        'user' => 'poise',
-        'directory' => '/tmp',
-        'environment' => include({'POISE_ENV' => 'default'}),
-      }) }
-    end
-  end # /describe poise_test2
+describe 'systemd provider', unless: File.exists?('/no_systemd') do
+  it_should_behave_like 'a poise_service_test', 'systemd', 8000
+end
 
-  describe 'poise_test3' do
-    describe service('poise_test3') do
-      it { is_expected.to_not be_enabled }
-      it { is_expected.to_not be_running }
-    end
-
-    describe 'process environment' do
-      subject { json_http('http://localhost:5002/') }
-      it { expect { subject }.to raise_error }
-    end
-  end # /describe poise_test3
+describe 'dummy provider' do
+  it_should_behave_like 'a poise_service_test', 'dummy', 9000, false
 end
