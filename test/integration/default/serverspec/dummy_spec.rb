@@ -18,26 +18,28 @@ require 'spec_helper'
 
 describe 'dummy provider' do
   describe 'poise_test_dummy' do
-    describe 'process environment' do
-      subject { json_http('http://localhost:9000/') }
-      it { is_expected.to include({
+    subject { json_http('http://localhost:9000/') }
+    it do
+      is_expected.to include({
         'user' => 'root',
         'directory' => '/',
-      }) }
+      })
     end
   end # /describe poise_test_dummy
 
   describe 'poise_test_dummy2' do
-    describe 'process environment' do
-      subject { json_http('http://localhost:9001/') }
-      it { is_expected.to include({
+    subject { json_http('http://localhost:9001/') }
+    it do
+      is_expected.to include({
         'user' => 'poise',
         'directory' => '/tmp',
         'environment' => include({'POISE_ENV' => 'dummy'}),
-      }) }
+      })
     end
   end # /describe poise_test_dummy2
 
   describe 'poise_test_dummy3' do
+    subject { json_http('http://localhost:9002/') }
+    it { expect { subject }.to raise_error }
   end # /describe poise_test_dummy3
 end
