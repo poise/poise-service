@@ -22,7 +22,11 @@ kill signal <%= @stop_signal %>
 reload signal <%= @reload_signal %>
 <%- end -%>
 
-exec <% if !@upstart_features[:setuid]  %>su -s /bin/sh -c 'exec "$0" "$@"' <%= @user %> -- <% end %><%= @command %>
+<%- if @upstart_features[:setuid] -%>
+exec <%= @command %>
+<%- else -%>
+exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "<%= @user %>"; ENV["HOME"] = Dir.home("<%= @user %>") rescue nil; exec(*<%= Shellwords.split(@command).inspect %>)'
+<%- end -%>
 <%- if !@upstart_features[:kill_signal]  && @stop_signal != 'TERM' -%>
 pre-stop script
   . /etc/rc.d/init.d/functions

@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# Used in the template.
+require 'shellwords'
+
 require 'chef/mixin/shell_out'
 
 require 'poise_service/error'
