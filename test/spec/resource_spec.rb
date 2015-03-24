@@ -173,5 +173,54 @@ describe PoiseService::Resource do
 
       it { is_expected.to eq '/' }
     end # /context with an invalid user
-  end
+  end # /describe #default_directory
+
+  describe '#restart_on_update' do
+    service_provider('sysvinit')
+    step_into(:poise_service)
+    before do
+      allow(File).to receive(:exists?).and_call_original
+      allow(File).to receive(:exists?).with('/etc/init.d/test').and_return(true)
+    end
+    subject { chef_run.template('/etc/init.d/test') }
+
+    context 'with true' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          command 'myapp --serve'
+        end
+      end
+      it { is_expected.to notify('poise_service[test]').to(:restart) }
+    end # /context with true
+
+    context 'with false' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          command 'myapp --serve'
+          restart_on_update false
+        end
+      end
+      it { is_expected.to_not notify('poise_service[test]').to(:restart) }
+    end # /context with false
+
+    context 'with immediately' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          command 'myapp --serve'
+          restart_on_update 'immediately'
+        end
+      end
+      it { is_expected.to notify('poise_service[test]').to(:restart).immediately }
+    end # /context with immediately
+
+    context 'with :immediately' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          command 'myapp --serve'
+          restart_on_update :immediately
+        end
+      end
+      it { is_expected.to notify('poise_service[test]').to(:restart).immediately }
+    end # /context with :immediately
+  end # /describe #restart_on_update
 end

@@ -104,6 +104,7 @@ describe PoiseService::Providers::Base do
              directory: '/cwd',
              environment: Hash.new,
              reload_signal: 'HUP',
+             restart_on_update: true,
              service_name: 'myapp',
              stop_signal: 'TERM',
              user: 'root',

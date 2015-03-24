@@ -162,7 +162,7 @@ module PoiseService
         end
       end
 
-      def service_template(path, default_source, notifies: true, &block)
+      def service_template(path, default_source, &block)
         template path do
           owner 'root'
           group 'root'
@@ -195,8 +195,10 @@ module PoiseService
           )
           # Don't trigger a restart if the template doesn't already exist, this
           # prevents restarting on the run that first creates the service.
-          if notifies && ::File.exists?(path)
-            self.notifies(:restart, new_resource)
+          restart_on_update = options.fetch('restart_on_update', new_resource.restart_on_update)
+          if restart_on_update && ::File.exists?(path)
+            mode = restart_on_update.to_s == 'immediately' ? :immediately : :delayed
+            notifies :restart, new_resource, mode
           end
           instance_exec(&block) if block
         end
