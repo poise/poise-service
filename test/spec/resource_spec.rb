@@ -137,4 +137,41 @@ describe PoiseService::Resource do
     its(:options) { are_expected.to eq({template: 'source.erb'}) }
     it { expect(subject.options(:sysvinit)).to eq({template: 'override.erb'}) }
   end # /describe #options
+
+  describe '#default_directory' do
+    let(:user) { 'root' }
+    subject do
+      described_class.new('test', chef_run.run_context).tap {|r| r.user(user) }.send(:default_directory)
+    end
+
+    context 'with root' do
+      context 'on Linux' do
+        let(:chefspec_options) { {platform: 'ubuntu', version: '14.04'} }
+        it { is_expected.to eq '/' }
+      end # /context 'on Linux
+
+      context 'on Windows' do
+        let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
+        it { is_expected.to eq 'C:\\' }
+      end # /context on Windows
+    end # /context with root
+
+    context 'with a normal user' do
+      let(:user) { 'poise' }
+      before do
+        expect(Dir).to receive(:home).with('poise').and_return('/home/poise')
+      end
+
+      it { is_expected.to eq '/home/poise' }
+    end # /context with a normal user
+
+    context 'with an invalid user' do
+      let(:user) { 'poise' }
+      before do
+        expect(Dir).to receive(:home).with('poise').and_raise(ArgumentError)
+      end
+
+      it { is_expected.to eq '/' }
+    end # /context with an invalid user
+  end
 end

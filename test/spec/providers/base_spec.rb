@@ -71,6 +71,13 @@ describe PoiseService::Providers::Base do
     end
   end # /describe #action_restart
 
+  describe '#action_reload' do
+    it do
+      expect(service_resource).to receive(:run_action).with(:reload).ordered
+      subject.action_reload
+    end
+  end # /describe #action_reload
+
   describe '#create_service' do
     it do
       expect { subject.send(:create_service) }.to raise_error(NotImplementedError)
