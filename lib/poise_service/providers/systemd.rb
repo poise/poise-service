@@ -14,17 +14,29 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
+
 require 'poise_service/providers/base'
 
 module PoiseService
   module Providers
     class Systemd < Base
+      include Chef::Mixin::ShellOut
       poise_service_provides(:systemd)
 
       def self.provides_auto?(node, resource)
         # Don't allow systemd under docker, it won't work.
         return false if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
         service_resource_hints.include?(:systemd)
+      end
+
+      def pid
+        cmd = shell_out(%w{systemctl status} + [new_resource.service_name])
+        if !cmd.error? && md = cmd.stdout.match(/Main PID: (\d+)/)
+          md[1].to_i
+        else
+          nil
+        end
       end
 
       private

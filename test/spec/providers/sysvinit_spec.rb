@@ -79,5 +79,6 @@ EOH
     end
 
     it { is_expected.to delete_file('/etc/init.d/test') }
+    it { is_expected.to delete_file('/var/run/test.pid') }
   end # /context with action :disable
 end

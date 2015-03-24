@@ -26,6 +26,10 @@ module PoiseService
         [:debian, :redhat, :invokercd].any? {|name| service_resource_hints.include?(name) }
       end
 
+      def pid
+        IO.read(pid_file).to_i if ::File.exists?(pid_file)
+      end
+
       private
 
       def service_resource
@@ -49,13 +53,15 @@ module PoiseService
         daemon = ENV['PATH'].split(/:/)
           .map {|path| ::File.absolute_path(parts[0], path) }
           .find {|path| ::File.exist?(path) } || parts[0]
+        # Sigh scoping.
+        pid_file_ = pid_file
         # Render the service template
         service_template("/etc/init.d/#{new_resource.service_name}", 'sysvinit.sh.erb') do
           mode '755'
           variables.update(
             daemon: daemon,
             daemon_options: parts[1].to_s,
-            pid_file: options['pid_file'] || "/var/run/#{new_resource.service_name}.pid",
+            pid_file: pid_file_,
             pid_file_external: !!options['pid_file'],
             platform_family: node['platform_family'],
           )
@@ -66,8 +72,15 @@ module PoiseService
         file "/etc/init.d/#{new_resource.service_name}" do
           action :delete
         end
+
+        file pid_file do
+          action :delete
+        end
       end
 
+      def pid_file
+        options['pid_file'] || "/var/run/#{new_resource.service_name}.pid"
+      end
     end
   end
 end

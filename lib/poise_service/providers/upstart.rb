@@ -31,6 +31,15 @@ module PoiseService
         service_resource_hints.include?(:upstart)
       end
 
+      def pid
+        cmd = shell_out(%w{initctl status} + [new_resource.service_name])
+        if !cmd.error? && md = cmd.stdout.match(/process (\d+)/)
+          md[1].to_i
+        else
+          nil
+        end
+      end
+
       private
 
       def service_resource

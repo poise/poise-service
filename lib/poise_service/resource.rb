@@ -84,6 +84,17 @@ module PoiseService
       reload_signal(clean_signal(reload_signal))
     end
 
+    # Return the PID of the main process for this service or nil if the service
+    # isn't running or the PID cannot be found.
+    #
+    # @return [Integer, nil]
+    # @example
+    #   execute "kill -WINCH #{resources('poise_test[myapp]').pid}"
+    def pid
+      # :pid isn't a real action, but this should still work.
+      provider_for_action(:pid).pid
+    end
+
     private
 
     # Try to find the home diretory for the configured user. This will fail if

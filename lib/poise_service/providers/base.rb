@@ -114,6 +114,10 @@ module PoiseService
         end
       end
 
+      def pid
+        raise NotImplementedError
+      end
+
       private
 
       # Recipes to include for this provider to work. Subclasses can override.

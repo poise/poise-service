@@ -100,7 +100,14 @@ shared_examples 'a poise_service_test' do |name, base_port, check_service=true|
       end
     end
   end # /describe reload service
-end
+
+  describe 'pid file' do
+    subject { IO.read("/tmp/poise_test_#{name}_pid") }
+    it { is_expected.to match /\d+/ }
+    its(:to_i) { is_expected.to eq json_http("http://localhost:#{base_port}/")['pid'] }
+    it { Process.kill(0, subject.to_i) }
+  end # /describe pid file
+end # /shared_examples a poise_service_test
 
 # CentOS 6 doesn't show upstart services in chkconfig, which is how specinfra
 # checkes what is enabled.

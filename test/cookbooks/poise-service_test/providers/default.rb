@@ -60,4 +60,12 @@ action :run do
       notifies action.to_sym, "poise_service[poise_test_#{new_resource.name}_#{action}]"
     end
   end
+
+  ruby_block "/tmp/poise_test_#{new_resource.name}_pid" do
+    block do
+      IO.write("/tmp/poise_test_#{new_resource.name}_pid",
+              resources("poise_service[poise_test_#{new_resource.name}]").pid.to_s
+              )
+    end
+  end
 end

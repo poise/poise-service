@@ -31,6 +31,7 @@ server.mount_proc '/' do |req, res|
     group: Etc.getgrgid(Process.gid).name,
     environment: ENV.to_hash,
     file_data: FILE_DATA,
+    pid: Process.pid,
   }.to_json
 end
 EOH

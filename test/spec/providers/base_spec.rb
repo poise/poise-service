@@ -78,6 +78,12 @@ describe PoiseService::Providers::Base do
     end
   end # /describe #action_reload
 
+  describe '#pid' do
+    it do
+      expect { subject.send(:pid) }.to raise_error(NotImplementedError)
+    end
+  end # /describe #pid
+
   describe '#create_service' do
     it do
       expect { subject.send(:create_service) }.to raise_error(NotImplementedError)
