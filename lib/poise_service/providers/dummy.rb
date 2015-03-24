@@ -22,12 +22,14 @@ module PoiseService
       poise_service_provides(:dummy)
 
       def action_start
+        return if pid
         if Process.fork
           # Parent, wait for the final child to write the pid file.
           until pid
             sleep(1)
           end
         else
+          # :nocov:
           # First child, daemonize and go to town.
           Process.daemon(true)
           # Daemonized, set up process environment.
@@ -38,14 +40,14 @@ module PoiseService
           Process.uid = new_resource.user
           IO.write(pid_file, Process.pid)
           Kernel.exec(new_resource.command)
+          # :nocov:
         end
       end
 
       def action_stop
-        if pid
-          Process.kill(new_resource.stop_signal, pid)
-          ::File.unlink(pid_file)
-        end
+        return unless pid
+        Process.kill(new_resource.stop_signal, pid)
+        ::File.unlink(pid_file)
       end
 
       def action_restart
@@ -64,7 +66,7 @@ module PoiseService
       private
 
       def service_resource
-        # Intentionally not implement
+        # Intentionally not implemented.
         raise NotImplementedError
       end
 
