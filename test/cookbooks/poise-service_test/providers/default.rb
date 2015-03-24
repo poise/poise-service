@@ -27,10 +27,37 @@ action :run do
     user 'poise'
   end
 
-  poise_service "poise_test_#{new_resource.name}3" do
+  poise_service "poise_test_#{new_resource.name}_noterm" do
     provider new_resource.service_provider if new_resource.service_provider
     action [:enable, :disable]
     command "/usr/bin/poise_test_noterm #{new_resource.base_port + 2}"
     stop_signal 'kill'
+  end
+
+  {'restart' => 3, 'reload' => 4}.each do |action, port|
+    # Stop it before writing the file so we always start with first.
+    poise_service "poise_test_#{new_resource.name}_#{action} stop" do
+      provider new_resource.service_provider if new_resource.service_provider
+      action(:disable)
+      service_name "poise_test_#{new_resource.name}_#{action}"
+    end
+
+    # Write the content to the read on service launch.
+    file "/etc/poise_test_#{new_resource.name}_#{action}" do
+      content 'first'
+    end
+
+    # Launch the service, reading in first.
+    poise_service "poise_test_#{new_resource.name}_#{action}" do
+      provider new_resource.service_provider if new_resource.service_provider
+      command "/usr/bin/poise_test #{new_resource.base_port + port} /etc/poise_test_#{new_resource.name}_#{action}"
+    end
+
+    # Rewrite the file to second, restart/reload to trigger an update.
+    file "/etc/poise_test_#{new_resource.name}_#{action} again" do
+      path "/etc/poise_test_#{new_resource.name}_#{action}"
+      content 'second'
+      notifies action.to_sym, "poise_service[poise_test_#{new_resource.name}_#{action}]"
+    end
   end
 end

@@ -19,13 +19,18 @@ service_script = <<-EOH
 require 'webrick'
 require 'json'
 require 'etc'
-server = WEBrick::HTTPServer.new(Port: ARGV[0] ? ARGV[0].to_i : 8000)
+FILE_DATA = ''
+def load_file
+  FILE_DATA.replace(IO.read(ARGV[1]))
+end
+server = WEBrick::HTTPServer.new(Port: ARGV[0].to_i)
 server.mount_proc '/' do |req, res|
   res.body = {
     directory: Dir.getwd,
     user: Etc.getpwuid(Process.uid).name,
     group: Etc.getgrgid(Process.gid).name,
     environment: ENV.to_hash,
+    file_data: FILE_DATA,
   }.to_json
 end
 EOH
@@ -37,6 +42,12 @@ file '/usr/bin/poise_test' do
   content <<-EOH
 #!/opt/chef/embedded/bin/ruby
 #{service_script}
+if ARGV[1]
+  load_file
+  trap('HUP') do
+    load_file
+  end
+end
 server.start
 EOH
 end

@@ -58,7 +58,7 @@ shared_examples 'a poise_service_test' do |name, base_port, check_service=true|
   end # /describe service with parameters
 
   describe 'noterm service' do
-    describe service("poise_test_#{name}3") do
+    describe service("poise_test_#{name}_noterm") do
       it { is_expected.to_not be_enabled }
       it { is_expected.to_not be_running }
     end if check_service
@@ -68,6 +68,38 @@ shared_examples 'a poise_service_test' do |name, base_port, check_service=true|
       it { expect { subject }.to raise_error }
     end
   end # /describe noterm service
+
+  describe 'restart service' do
+    describe service("poise_test_#{name}_restart") do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end if check_service
+
+    describe 'process environment' do
+      subject { json_http("http://localhost:#{base_port+3}/") }
+      it do
+        is_expected.to include({
+          'file_data' => 'second',
+        })
+      end
+    end
+  end # /describe restart service
+
+  describe 'reload service' do
+    describe service("poise_test_#{name}_reload") do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end if check_service
+
+    describe 'process environment' do
+      subject { json_http("http://localhost:#{base_port+4}/") }
+      it do
+        is_expected.to include({
+          'file_data' => 'second',
+        })
+      end
+    end
+  end # /describe reload service
 end
 
 # CentOS 6 doesn't show upstart services in chkconfig, which is how specinfra
