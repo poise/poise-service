@@ -27,10 +27,6 @@ describe 'upstart provider', unless: File.exists?('/no_upstart') do
       it { is_expected.to be_running }
     end unless old_upstart
 
-    describe process('ruby /usr/bin/poise_test_upstart') do
-      it { is_expected.to be_running }
-    end
-
     describe 'process environment' do
       subject { json_http('http://localhost:7000/') }
       it { is_expected.to include({

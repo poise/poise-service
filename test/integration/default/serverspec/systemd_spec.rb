@@ -23,10 +23,6 @@ describe 'systemd provider', unless: File.exists?('/no_systemd') do
       it { is_expected.to be_running }
     end
 
-    describe process('ruby /usr/bin/poise_test_systemd') do
-      it { is_expected.to be_running }
-    end
-
     describe 'process environment' do
       subject { json_http('http://localhost:8000/') }
       it { is_expected.to include({
