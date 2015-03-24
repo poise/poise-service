@@ -32,7 +32,7 @@ module PoiseService
 
       def pid
         cmd = shell_out(%w{systemctl status} + [new_resource.service_name])
-        if !cmd.error? && md = cmd.stdout.match(/Main PID: (\d+)/)
+        if !cmd.error? && cmd.stdout.include?('Active: active (running)') && md = cmd.stdout.match(/Main PID: (\d+)/)
           md[1].to_i
         else
           nil
