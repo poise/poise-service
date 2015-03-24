@@ -154,7 +154,7 @@ module PoiseService
       # restart actions.
       def service_resource
         @service_resource ||= Chef::Resource::Service.new(new_resource.service_name, run_context).tap do |r|
-          r.supports(status: true, restart: true)
+          r.supports(status: true, restart: true, reload: true)
         end
       end
 
