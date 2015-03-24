@@ -45,7 +45,7 @@ respawn limit 10 5
 umask 022
 chdir /
 
-exec su -s /bin/sh -c 'exec "$0" "$@"' root -- myapp --serve
+exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "root"; ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
 EOH
 
       context 'with a stop signal' do
@@ -69,7 +69,7 @@ respawn limit 10 5
 umask 022
 chdir /
 
-exec su -s /bin/sh -c 'exec "$0" "$@"' root -- myapp --serve
+exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "root"; ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
 pre-stop script
   . /etc/rc.d/init.d/functions
   killproc "myapp" -KILL
