@@ -20,7 +20,7 @@ action :run do
     command "/usr/bin/poise_test #{new_resource.base_port}"
   end
 
-  poise_service "poise_test_#{new_resource.name}2" do
+  poise_service "poise_test_#{new_resource.name}_params" do
     provider new_resource.service_provider if new_resource.service_provider
     command "/usr/bin/poise_test #{new_resource.base_port + 1}"
     environment POISE_ENV: new_resource.name

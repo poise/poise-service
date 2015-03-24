@@ -42,7 +42,7 @@ shared_examples 'a poise_service_test' do |name, base_port, check_service=true|
   end # /describe default service
 
   describe 'service with parameters' do
-    describe service("poise_test_#{name}2") do
+    describe service("poise_test_#{name}_params") do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
     end if check_service
