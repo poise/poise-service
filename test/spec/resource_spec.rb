@@ -223,4 +223,13 @@ describe PoiseService::Resource do
       it { is_expected.to notify('poise_service[test]').to(:restart).immediately }
     end # /context with :immediately
   end # /describe #restart_on_update
+
+  describe '#pid' do
+    subject { described_class.new(nil, nil) }
+    it do
+      fake_pid = double('pid')
+      expect(subject).to receive(:provider_for_action).with(:pid).and_return(double(pid: fake_pid))
+      expect(subject.pid).to eq fake_pid
+    end
+  end # /describe #pid
 end

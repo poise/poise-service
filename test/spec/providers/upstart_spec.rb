@@ -199,4 +199,37 @@ EOH
       it { is_expected.to eq({kill_signal: true, reload_signal: true, setuid: true}) }
     end # /context with upstart 1.12.1
   end # /describe #upstart_features
+
+  describe '#pid' do
+    context 'service is running' do
+      before do
+        fake_cmd = double('shellout', error?: false, live_stream: true, run_command: nil, stdout: <<-EOH)
+test start/running, process 2132
+EOH
+        expect(Mixlib::ShellOut).to receive(:new).with(%w{initctl status test}, kind_of(Hash)).and_return(fake_cmd)
+      end
+      subject { described_class.new(double(service_name: 'test'), nil) }
+      its(:pid) { is_expected.to eq 2132 }
+    end # context service is running
+
+    context 'service is stopped' do
+      before do
+        fake_cmd = double('shellout', error?: false, live_stream: true, run_command: nil, stdout: <<-EOH)
+test stop/waiting
+EOH
+        expect(Mixlib::ShellOut).to receive(:new).with(%w{initctl status test}, kind_of(Hash)).and_return(fake_cmd)
+      end
+      subject { described_class.new(double(service_name: 'test'), nil) }
+      its(:pid) { is_expected.to be_nil }
+    end # context service is stopped
+
+    context 'initctl errors' do
+      before do
+        fake_cmd = double('shellout', error?: true, live_stream: true, run_command: nil)
+        expect(Mixlib::ShellOut).to receive(:new).with(%w{initctl status test}, kind_of(Hash)).and_return(fake_cmd)
+      end
+      subject { described_class.new(double(service_name: 'test'), nil) }
+      its(:pid) { is_expected.to be_nil }
+    end # context initctl errors
+  end # /describe #pid
 end

@@ -81,4 +81,16 @@ EOH
     it { is_expected.to delete_file('/etc/init.d/test') }
     it { is_expected.to delete_file('/var/run/test.pid') }
   end # /context with action :disable
+
+  describe '#pid' do
+    subject { described_class.new(nil, nil) }
+    before do
+      allow(File).to receive(:exists?).and_call_original
+      allow(File).to receive(:exists?).with('/pid').and_return(true)
+      allow(IO).to receive(:read).and_call_original
+      allow(IO).to receive(:read).with('/pid').and_return('100')
+      expect(subject).to receive(:pid_file).and_return('/pid').at_least(:once)
+    end
+    its(:pid) { is_expected.to eq 100 }
+  end # /describe #pid
 end
