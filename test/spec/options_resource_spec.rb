@@ -69,39 +69,35 @@ describe PoiseService::OptionsResource do
   end # /describe #_options
 
   describe 'provider options' do
-    let(:service_options) do
-      run_chef
-      chef_run.find_resource(:poise_service, 'test').provider_for_action(:enable).options
+    subject do
+      chef_run.poise_service('test').provider_for_action(:enable).options
     end
-
     context 'before service resource' do
-      recipe do
+      recipe(subject: false) do
         poise_service_options 'test' do
           position 'before'
         end
 
         poise_service 'test'
       end
-      subject { service_options }
 
       it { is_expected.to eq({'position' => 'before'}) }
     end # /context before service resource
 
     context 'after service resource' do
-      recipe do
+      recipe(subject: false) do
         poise_service 'test'
 
         poise_service_options 'test' do
           position 'after'
         end
       end
-      subject { service_options }
 
       it { is_expected.to eq({'position' => 'after'}) }
     end # /context after service resource
 
     context 'before service resource for a provider' do
-      recipe do
+      recipe(subject: false) do
         poise_service_options 'test' do
           for_provider :sysvinit
           position 'before'
@@ -109,13 +105,12 @@ describe PoiseService::OptionsResource do
 
         poise_service 'test'
       end
-      subject { service_options }
 
       it { expect { subject }.to raise_error }
     end # /context before service resource for a provider
 
     context 'after service resource for a provider' do
-      recipe do
+      recipe(subject: false) do
         poise_service 'test'
 
         poise_service_options 'test' do
@@ -123,13 +118,12 @@ describe PoiseService::OptionsResource do
           position 'after'
         end
       end
-      subject { service_options }
 
       it { is_expected.to eq({'position' => 'after'}) }
     end # /context after service resource for a provider
 
     context 'after service resource for a non-matching provider' do
-      recipe do
+      recipe(subject: false) do
         poise_service 'test'
 
         poise_service_options 'test' do
@@ -137,13 +131,12 @@ describe PoiseService::OptionsResource do
           position 'after'
         end
       end
-      subject { service_options }
 
       it { is_expected.to eq({}) }
     end # /context after service resource for a non-matching provider
 
     context 'mutiple options' do
-      recipe do
+      recipe(subject: false) do
         poise_service_options 'test1' do
           service_name 'test'
           position 'before'
@@ -170,13 +163,12 @@ describe PoiseService::OptionsResource do
           four 4
         end
       end
-      subject { service_options }
 
       it { is_expected.to eq({'position' => 'before', 'one' => 1, 'two' => 2, 'three' => 3}) }
     end # /context mutiple options
 
     context 'using a service_name name' do
-      recipe do
+      recipe(subject: false) do
         poise_service 'test' do
           service_name 'longer'
         end
@@ -185,7 +177,6 @@ describe PoiseService::OptionsResource do
           kind 'service_name'
         end
       end
-      subject { service_options }
 
       it { is_expected.to eq({'kind' => 'service_name'}) }
     end # /context using a service_name name

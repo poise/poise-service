@@ -110,7 +110,7 @@ describe PoiseService::Providers::Base do
              user: 'root',
              )
     end
-    let(:run_context) { chef_runner.converge().run_context }
+    let(:run_context) { chef_run.run_context }
     let(:options) { Hash.new }
     let(:block) { Proc.new { } }
     before do
