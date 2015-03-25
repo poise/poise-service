@@ -68,7 +68,6 @@ module PoiseService
         service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb') do
           variables.update(
             upstart_features: features,
-            pid_file: options['pid_file'],
           )
         end
       end
