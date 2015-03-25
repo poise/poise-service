@@ -23,7 +23,7 @@ application cookbooks.
 ### How is this different from the built-in service resource?
 
 Chef includes a `service` resource which allows interacting with certain
-service management frameworks such as SysVInit, Upstart, and SystemD.
+service management frameworks such as SysV, Upstart, and systemd.
 `poise-service` goes further in that it actually generates the configuration
 files needed for the requested service management framework, as well as offering
 a dependency injection system for application cookbooks to customize which
@@ -31,11 +31,11 @@ framework is used.
 
 ### What service management frameworks are supported?
 
-* SysVInit (aka /etc/init.d)
+* SysV (aka /etc/init.d)
 * Upstart
-* SystemD
+* systemd
 * [Runit](https://github.com/poise/poise-service-runit)
-* *Supervisord* (coming soon!)
+* *Supervisor (coming soon!)*
 
 ## Resources
 
