@@ -163,6 +163,8 @@ module PoiseService
       end
 
       def service_template(path, default_source, &block)
+        # Sigh scoping.
+        options = self.options
         template path do
           owner 'root'
           group 'root'
@@ -183,15 +185,15 @@ module PoiseService
             cookbook 'poise-service'
           end
           variables(
-            command: new_resource.command,
-            directory: new_resource.directory,
-            environment: new_resource.environment,
+            command: options['command'] || new_resource.command,
+            directory: options['directory'] || new_resource.directory,
+            environment: options['environment'] || new_resource.environment,
             name: new_resource.service_name,
             new_resource: new_resource,
             options: options,
-            reload_signal: new_resource.reload_signal,
-            stop_signal: new_resource.stop_signal,
-            user: new_resource.user,
+            reload_signal: options['reload_signal'] || new_resource.reload_signal,
+            stop_signal: options['stop_signal'] || new_resource.stop_signal,
+            user: options['user'] || new_resource.user,
           )
           # Don't trigger a restart if the template doesn't already exist, this
           # prevents restarting on the run that first creates the service.
