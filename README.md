@@ -281,7 +281,9 @@ end
 
 ## Sponsors
 
-The Poise test server infrastructure is generously sponsored by [Rackspace](https://rackspace.com/). Thanks Rackspace!
+Development sponsored by [Bloomberg](http://www.bloomberg.com/company/technology/).
+
+The Poise test server infrastructure is generously sponsored by [Rackspace](https://rackspace.com/).
 
 ## License
 
