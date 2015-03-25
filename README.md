@@ -64,7 +64,7 @@ end
 
 * `service_name` – Name of the service. *(name attribute)*
 * `command` – Command to run for the service. This command must stay in the
-  foreground. *(required)*
+  foreground and not daemonize itself. *(required)*
 * `user` – User to run the service as. See
   [`poise_service_user`](#poise_service_user) for any easy way to create service
    users. *(default: root)*
