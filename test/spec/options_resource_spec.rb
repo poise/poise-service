@@ -66,6 +66,17 @@ describe PoiseService::OptionsResource do
 
       it { is_expected.to run_poise_service_options('test').with(_options: {'foo' => 'bar'}) }
     end # /context with new_resource-based options
+
+    context 'with a bad method' do
+      recipe do
+        poise_service_options 'test' do
+          foo noode.name
+          baz 42
+        end
+      end
+
+      it { expect { subject }.to raise_error NoMethodError }
+    end # /context simple options
   end # /describe #_options
 
   describe 'provider options' do

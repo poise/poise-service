@@ -45,6 +45,7 @@ module PoiseService
       rescue NoMethodError
         key, val = args
         val ||= block
+        raise unless val
         _options[key] = val
       end
 
