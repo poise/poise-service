@@ -17,8 +17,8 @@ service without forcing the end-user of the library to adhere to their choice of
 service management framework. The `poise_service` resource represents an
 abstract service to be run, which can then be customized by node attributes and
 the `poise_service_options` resource. This is a technique called [dependency
-injection](), and allows a measure of decoupling between the library and
-application cookbooks.
+injection](https://en.wikipedia.org/wiki/Dependency_injection), and allows a
+measure of decoupling between the library and application cookbooks.
 
 ### How is this different from the built-in service resource?
 
@@ -66,7 +66,7 @@ end
 * `command` – Command to run for the service. This command must stay in the
   foreground. *(required)*
 * `user` – User to run the service as. See
-  [`poise_service_user`](#poise-service-user) for any easy way to create service
+  [`poise_service_user`](#poise_service_user) for any easy way to create service
    users. *(default: root)*
 * `directory` – Working directory for the service. *(default: home directory for
   user, or / if not found)*
@@ -135,7 +135,7 @@ documentation for each provider to see what options the use.
 ### `poise_service_options`
 
 The `poise_service_options` resource allows setting per-service options in a
-DSL-friendly way. See [the Setting Options](#setting-options) section for more
+DSL-friendly way. See [the Service Options](#service-options) section for more
 information about service options overall.
 
 ```ruby
