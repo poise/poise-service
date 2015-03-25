@@ -71,8 +71,10 @@ chdir /
 
 exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "root"; ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
 pre-stop script
-  . /etc/rc.d/init.d/functions
-  killproc "myapp" -KILL
+  PID=`initctl status test | sed 's/^.*process \\([0-9]*\\)$/\\1/'`
+  if [ -n "$PID" ]; then
+    kill -KILL "$PID"
+  fi
 end script
 EOH
       end # /context with a stop signal
