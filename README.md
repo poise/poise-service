@@ -181,6 +181,104 @@ end
 * `gid` – GID of the group. If unspecified it will be automatically allocated.
 * `home` – Home directory of the user.
 
+
+## Providers
+
+### `sysvinit`
+
+The `sysvinit` provider supports SystemV-style init systems on Debian-family and
+RHEL-family platforms. It will create the `/etc/init.d/<service_name>` script
+and enable/disable the service using the platform-specific service resource.
+
+```ruby
+poise_service 'myapp' do
+  provider :sysvinit
+  command 'myapp --serve'
+end
+```
+
+By default a PID file will be created in `/var/run/service_name.pid`. You can
+use the `pid_file` option detailed below to override this and rely on your
+process creating a PID file in the given path. This is highly recommended on
+RHEL-family platforms as automatic PID detection there is more finicky.
+
+#### Options
+
+* `pid_file` – Path to PID file that the service command will create.
+* `template` – Override the default script template. If you want to use a
+  template in a different cookbook use `'cookbook:template'`.
+* `command` – Override the service command.
+* `directory` – Override the service directory.
+* `environment` – Override the service environment variables.
+* `reload_signal` – Override the service reload signal.
+* `stop_signal` – Override the service stop signal.
+* `user` – Override the service user.
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+
+### `upstart`
+
+The `upstart` provider supports [Upstart](http://upstart.ubuntu.com/). It will
+create the `/etc/init/service_name.conf` configuration.
+
+```ruby
+poise_service 'myapp' do
+  provider :upstart
+  command 'myapp --serve'
+end
+```
+
+As a wide variety of versions of Upstart are in use in various Linux
+distributions, the provider does its best to identify which features are
+available and provide shims as appropriate. Most of these should be invisible
+however Upstart older than 1.10 does not support setting a `reload signal` so
+only SIGHUP can be used. You can set a `reload_shim` option to enable an
+internal implementaion of reloading to be used for signals other than SIGHUP,
+however as this is implemented inside Chef code, running `initctl reload` would
+still result in SIGHUP being sent. For this reason, the feature is disabled by
+default and will throw an error if a reload signal other than SIGHUP is used.
+
+#### Options
+
+* `reload_shim` – Enable the reload signal shim. See above for a warning about
+  this feature.
+* `template` – Override the default configuration template. If you want to use a
+  template in a different cookbook use `'cookbook:template'`.
+* `command` – Override the service command.
+* `directory` – Override the service directory.
+* `environment` – Override the service environment variables.
+* `reload_signal` – Override the service reload signal.
+* `stop_signal` – Override the service stop signal.
+* `user` – Override the service user.
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+
+### `systemd`
+
+The `systemd` provider supports [systemd](http://www.freedesktop.org/wiki/Software/systemd/).
+It will create the `/etc/systemd/system/service_name.service` configuration.
+
+
+```ruby
+poise_service 'myapp' do
+  provider :systemd
+  command 'myapp --serve'
+end
+```
+
+#### Options
+
+* `template` – Override the default configuration template. If you want to use a
+  template in a different cookbook use `'cookbook:template'`.
+* `command` – Override the service command.
+* `directory` – Override the service directory.
+* `environment` – Override the service environment variables.
+* `reload_signal` – Override the service reload signal.
+* `stop_signal` – Override the service stop signal.
+* `user` – Override the service user.
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+
 ## Sponsors
 
 The Poise test server infrastructure is generously sponsored by [Rackspace](https://rackspace.com/). Thanks Rackspace!
@@ -200,3 +298,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+# TODO
+
+* ServiceWrapper mixin
