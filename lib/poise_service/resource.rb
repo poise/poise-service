@@ -47,7 +47,6 @@ module PoiseService
     attribute(:reload_signal, kind_of: [String, Symbol, Integer], default: 'HUP')
     attribute(:restart_on_update, equal_to: [true, false, 'immediately', :immediately], default: true)
 
-
     def options(service_type=nil, val=nil)
       key = :options
       if !val && service_type.is_a?(Hash)
