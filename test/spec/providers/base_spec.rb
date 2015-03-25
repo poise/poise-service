@@ -25,10 +25,12 @@ describe PoiseService::Providers::Base do
       allow(r).to receive(:updated_by_last_action?).and_return(false)
     end
   end
+  let(:options) { Hash.new }
   subject(:provider) do
     described_class.new(new_resource, run_context).tap do |provider|
       allow(provider).to receive(:notifying_block) {|&block| block.call }
       allow(provider).to receive(:service_resource).and_return(service_resource)
+      allow(provider).to receive(:options).and_return(options)
     end
   end
 
@@ -69,6 +71,14 @@ describe PoiseService::Providers::Base do
       expect(service_resource).to receive(:run_action).with(:restart).ordered
       subject.action_restart
     end
+
+    context 'with never_restart' do
+      before { options['never_restart'] = true }
+      it do
+        expect(service_resource).to_not receive(:run_action).with(:restart).ordered
+        subject.action_restart
+      end
+    end # /context with never_restart
   end # /describe #action_restart
 
   describe '#action_reload' do
@@ -76,6 +86,14 @@ describe PoiseService::Providers::Base do
       expect(service_resource).to receive(:run_action).with(:reload).ordered
       subject.action_reload
     end
+
+    context 'with never_reload' do
+      before { options['never_reload'] = true }
+      it do
+        expect(service_resource).to_not receive(:run_action).with(:reload).ordered
+        subject.action_reload
+      end
+    end # /context with never_reload
   end # /describe #action_reload
 
   describe '#pid' do

@@ -35,6 +35,7 @@ module PoiseService
       end
 
       def action_reload
+        return if options['never_reload']
         if options['reload_shim'] && !upstart_features[:reload_signal] && new_resource.reload_signal != 'HUP'
           Process.kill(new_resource.reload_signal, pid)
         else

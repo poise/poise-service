@@ -103,12 +103,14 @@ module PoiseService
       end
 
       def action_restart
+        return if options['never_restart']
         notify_if_service do
           service_resource.run_action(:restart)
         end
       end
 
       def action_reload
+        return if options['never_reload']
         notify_if_service do
           service_resource.run_action(:reload)
         end
