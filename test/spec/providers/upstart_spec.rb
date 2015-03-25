@@ -110,6 +110,23 @@ EOH
 
         it { expect { subject }.to raise_error PoiseService::Error }
       end # /context with a reload signal
+
+      context 'with a reload signal and old_reload:true' do
+        recipe do
+          poise_service 'test' do
+            action :reload
+            command 'myapp --serve'
+            reload_signal 'USR1'
+            options :upstart, reload_shim: true
+          end
+        end
+
+        it do
+          expect_any_instance_of(described_class).to receive(:pid).and_return(123)
+          expect(Process).to receive(:kill).with('USR1', 123)
+          run_chef
+        end
+      end # /context with a reload signal and old_reload:true
     end # /context with upstart 1.5
 
     context 'with upstart 1.12.1' do

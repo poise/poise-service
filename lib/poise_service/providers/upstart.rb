@@ -34,6 +34,14 @@ module PoiseService
         service_resource_hints.include?(:upstart)
       end
 
+      def action_reload
+        if options['reload_shim'] && !upstart_features[:reload_signal] && new_resource.reload_signal != 'HUP'
+          Process.kill(new_resource.reload_signal, pid)
+        else
+          super
+        end
+      end
+
       def pid
         cmd = shell_out(%w{initctl status} + [new_resource.service_name])
         if !cmd.error? && md = cmd.stdout.match(/process (\d+)/)
@@ -53,8 +61,8 @@ module PoiseService
 
       def create_service
         features = upstart_features
-        if !features[:reload_signal] && new_resource.reload_signal != 'HUP'
-          raise Error.new("Upstart #{upstart_version} only supports HUP for reload, cannot use #{new_resource.reload_signal} for #{new_resource.to_s}")
+        if !options['reload_shim'] && !features[:reload_signal] && new_resource.reload_signal != 'HUP'
+          raise Error.new("Upstart #{upstart_version} only supports HUP for reload, to use the shim please set the 'reload_shim' options for #{new_resource.to_s}")
         end
         service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb') do
           variables.update(
