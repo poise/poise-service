@@ -110,23 +110,6 @@ EOH
 
         it { expect { subject }.to raise_error PoiseService::Error }
       end # /context with a reload signal
-
-      context 'with a reload signal and old_reload:true' do
-        recipe do
-          poise_service 'test' do
-            action :reload
-            command 'myapp --serve'
-            reload_signal 'USR1'
-            options :upstart, reload_shim: true
-          end
-        end
-
-        it do
-          expect_any_instance_of(described_class).to receive(:pid).and_return(123)
-          expect(Process).to receive(:kill).with('USR1', 123)
-          run_chef
-        end
-      end # /context with a reload signal and old_reload:true
     end # /context with upstart 1.5
 
     context 'with upstart 1.12.1' do
@@ -163,6 +146,69 @@ EOH
 
     it { is_expected.to delete_file('/etc/init/test.conf') }
   end # /describe #action_disable
+
+  describe '#action_reload' do
+    service_provider('upstart')
+    step_into(:poise_service)
+    let(:upstart_version) { '0' }
+    before do
+      allow_any_instance_of(described_class).to receive(:upstart_version).and_return(upstart_version)
+    end
+
+    context 'with upstart 1.5' do
+      let(:upstart_version) { '1.5' }
+
+      context 'with a reload signal' do
+        recipe do
+          poise_service 'test' do
+            action :reload
+            command 'myapp --serve'
+            reload_signal 'USR1'
+          end
+        end
+
+        it { expect { subject }.to raise_error PoiseService::Error }
+      end # /context with a reload signal
+
+      context 'with a reload signal and reload_shim:true' do
+        recipe do
+          poise_service 'test' do
+            action :reload
+            command 'myapp --serve'
+            reload_signal 'USR1'
+            options :upstart, reload_shim: true
+          end
+        end
+
+        it do
+          expect_any_instance_of(described_class).to receive(:pid).and_return(123)
+          expect(Process).to receive(:kill).with('USR1', 123)
+          run_chef
+        end
+      end # /context with a reload signal and reload_shim:true
+    end # /context with upstart 1.5
+
+    context 'with upstart 1.12.1' do
+      let(:upstart_version) { '1.12.1' }
+
+      context 'with a reload signal' do
+        recipe do
+          poise_service 'test' do
+            action :reload
+            command 'myapp --serve'
+            reload_signal 'USR1'
+          end
+        end
+
+        it do
+          fake_service = double('service_resource', updated_by_last_action: nil, updated_by_last_action?: false)
+          expect(fake_service).to receive(:run_action).with(:reload)
+          expect_any_instance_of(described_class).to receive(:service_resource).at_least(:once).and_return(fake_service)
+          run_chef
+        end
+      end # /context with a reload signal
+    end # /context with upstart 1.12.1
+  end # /describe #action_reload
 
   describe '#upstart_version' do
     subject { described_class.new(nil, nil).send(:upstart_version) }

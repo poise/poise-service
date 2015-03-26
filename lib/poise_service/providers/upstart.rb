@@ -36,8 +36,12 @@ module PoiseService
 
       def action_reload
         return if options['never_reload']
-        if options['reload_shim'] && !upstart_features[:reload_signal] && new_resource.reload_signal != 'HUP'
-          Process.kill(new_resource.reload_signal, pid)
+        if !upstart_features[:reload_signal] && new_resource.reload_signal != 'HUP'
+          if options[:reload_shim]
+            Process.kill(new_resource.reload_signal, pid)
+          else
+            check_reload_signal!
+          end
         else
           super
         end
@@ -61,10 +65,9 @@ module PoiseService
       end
 
       def create_service
+        check_reload_signal!
+        # Set features so it will be a closure below.
         features = upstart_features
-        if !options['reload_shim'] && !features[:reload_signal] && new_resource.reload_signal != 'HUP'
-          raise Error.new("Upstart #{upstart_version} only supports HUP for reload, to use the shim please set the 'reload_shim' options for #{new_resource.to_s}")
-        end
         service_template("/etc/init/#{new_resource.service_name}.conf", 'upstart.conf.erb') do
           variables.update(
             upstart_features: features,
@@ -88,15 +91,23 @@ module PoiseService
       end
 
       def upstart_features
-        upstart_ver = Gem::Version.new(upstart_version)
-        versions_added = {
-          kill_signal: '1.3',
-          reload_signal: '1.10',
-          setuid: '1.4',
-        }
-        versions_added.inject({}) do |memo, (feature, version)|
-          memo[feature] = Gem::Requirement.create(">= #{version}").satisfied_by?(upstart_ver)
-          memo
+        @upstart_features ||= begin
+          upstart_ver = Gem::Version.new(upstart_version)
+          versions_added = {
+            kill_signal: '1.3',
+            reload_signal: '1.10',
+            setuid: '1.4',
+          }
+          versions_added.inject({}) do |memo, (feature, version)|
+            memo[feature] = Gem::Requirement.create(">= #{version}").satisfied_by?(upstart_ver)
+            memo
+          end
+        end
+      end
+
+      def check_reload_signal!
+        if !options['reload_shim'] && !upstart_features[:reload_signal] && new_resource.reload_signal != 'HUP'
+          raise Error.new("Upstart #{upstart_version} only supports HUP for reload, to use the shim please set the 'reload_shim' options for #{new_resource.to_s}")
         end
       end
 
