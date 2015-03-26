@@ -18,6 +18,7 @@ require 'poise_service/options_resource'
 require 'poise_service/providers'
 require 'poise_service/resource'
 require 'poise_service/user_resource'
+require 'poise_service/utils'
 
 
 module PoiseService
