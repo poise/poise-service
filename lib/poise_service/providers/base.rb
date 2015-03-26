@@ -160,13 +160,14 @@ module PoiseService
       # restart actions.
       def service_resource
         @service_resource ||= Chef::Resource::Service.new(new_resource.service_name, run_context).tap do |r|
+          r.enclosing_provider = self
+          r.source_line = new_resource.source_line
           r.supports(status: true, restart: true, reload: true)
         end
       end
 
       def service_template(path, default_source, &block)
         # Sigh scoping.
-        options = self.options
         template path do
           owner 'root'
           group 'root'
