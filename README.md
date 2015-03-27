@@ -49,6 +49,34 @@ framework is used.
 * [Runit](https://github.com/poise/poise-service-runit)
 * *Supervisor (coming soon!)*
 
+
+## Quick Start
+
+To create a service user and a service to run Apache2:
+
+```ruby
+poise_service_user 'www-data'
+
+poise_service 'apache2' do
+  command '/usr/sbin/apache2 -f /etc/apache2/apache2.conf -DFOREGROUND'
+  stop_signal 'WINCH'
+  reload_signal 'USR1'
+end
+```
+
+or for a hypothetical Rails web application:
+
+```ruby
+poise_service_user 'myapp'
+
+poise_service 'myapp-web' do
+  command 'bundle exec unicorn -p 8080'
+  user 'myapp'
+  directory '/srv/myapp'
+  environment RAILS_ENV: 'production'
+end
+```
+
 ## Resources
 
 ### `poise_service`
@@ -58,7 +86,6 @@ The `poise_service` resource is the abstract definition of a service.
 ```ruby
 poise_service 'myapp' do
   command 'myapp --serve'
-  user 'myuser'
   environment RAILS_ENV: 'production'
 end
 ```
@@ -304,8 +331,8 @@ provider class:
 def service_options(service)
   # service is the PoiseService::Resource object instance.
   service.command "/usr/sbin/#{new_resource.name} -f /etc/#{new_resource.name}/conf/httpd.conf -DFOREGROUND"
-  service.stop_signal :WINCH
-  service.reload_signal :USR1
+  service.stop_signal 'WINCH'
+  service.reload_signal 'USR1'
 end
 ```
 
