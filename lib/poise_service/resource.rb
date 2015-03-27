@@ -54,7 +54,7 @@ module PoiseService
       elsif service_type
         key = :"options_#{service_type}"
       end
-      set_or_return(key, val, kind_of: Hash, default: lazy { Mash.new })
+      set_or_return(key, val ? Mash.new(val) : val, kind_of: Hash, default: lazy { Mash.new })
     end
 
     # Allow setting the provider directly using the same names as the attribute

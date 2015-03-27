@@ -134,8 +134,8 @@ describe PoiseService::Resource do
       end
     end
 
-    its(:options) { are_expected.to eq({template: 'source.erb'}) }
-    it { expect(subject.options(:sysvinit)).to eq({template: 'override.erb'}) }
+    its(:options) { are_expected.to eq({'template' => 'source.erb'}) }
+    it { expect(subject.options(:sysvinit)).to eq({'template' => 'override.erb'}) }
   end # /describe #options
 
   describe '#default_directory' do
