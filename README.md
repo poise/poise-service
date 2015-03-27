@@ -193,7 +193,6 @@ end
 * `gid` – GID of the group. If unspecified it will be automatically allocated.
 * `home` – Home directory of the user.
 
-
 ## Providers
 
 ### `sysvinit`
@@ -290,6 +289,47 @@ end
 * `user` – Override the service user.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
+
+## ServiceMixin
+
+For the common case of a resource (LWRP or plain Ruby) that roughly maps to
+"some config files and a service" poise-service provides a mixin module,
+`PoiseService::ServiceMixin`. This mixin adds the standard service actions
+(`enable`, `disable`, `start`, `stop`, `restart`, and `reload`) with basic
+implementations that call those actions on a `poise_service` resource for you.
+You customize the service by defining a `service_options` method on your
+provider class:
+
+```ruby
+def service_options(service)
+  # service is the PoiseService::Resource object instance.
+  service.command "/usr/sbin/#{new_resource.name} -f /etc/#{new_resource.name}/conf/httpd.conf -DFOREGROUND"
+  service.stop_signal :WINCH
+  service.reload_signal :USR1
+end
+```
+
+You will generally want to override the `enable` action to install things
+related to the service like packages, users and configuration files:
+
+```ruby
+def action_enable
+  notifying_block do
+    package 'apache2'
+    poise_service_user 'www-data'
+    template "/etc/#{new_resource.name}/conf/httpd.conf" do
+      # ...
+    end
+  end
+  # This super call will run the normal service enable,
+  # creating the service and starting it.
+  super
+end
+```
+
+See [the poise_service_test_mixin resource](test/cookbooks/poise-service_test/resources/mixin.rb)
+and [provider](test/cookbooks/poise-service_test/resources/mixin.rb) for
+examples of using `ServiceMixin` in an LWRP.
 
 ## Sponsors
 
