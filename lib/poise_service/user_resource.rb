@@ -38,7 +38,7 @@ module PoiseService
       provides(:poise_service_user)
       actions(:create, :remove)
 
-      # @!attribute [user
+      # @!attribute user
       #   Name of the user to create. Defaults to the name of the resource.
       #   @return [String]
       attribute(:user, kind_of: String, name_attribute: true)
