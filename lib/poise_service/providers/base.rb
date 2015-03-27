@@ -42,7 +42,7 @@ module PoiseService
       #
       # @param node [Chef::Node] Node to check against.
       # @param resource [Chef::Resource] Resource to check against.
-      # @returns [Boolean]
+      # @return [Boolean]
       def self.provides_auto?(node, resource)
         false
       end
@@ -56,7 +56,7 @@ module PoiseService
       # Only used internally but has to be public for the scope-promotion in
       # Chef::Resource (enclosing_provider) to work correctly.
       #
-      # @returns [Hash]
+      # @return [Hash]
       def options
         @options ||= Mash.new.tap do |opts|
           opts.update(new_resource.options)
