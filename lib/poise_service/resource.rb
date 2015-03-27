@@ -27,6 +27,13 @@ module PoiseService
   # dependency injection framework.
   #
   # @since 1.0.0
+  # @provides poise_service
+  # @action enable
+  # @action disable
+  # @action start
+  # @action stop
+  # @action restart
+  # @action reload
   # @example
   #   poise_service 'myapp' do
   #     command 'myapp --serve'
@@ -38,15 +45,63 @@ module PoiseService
     provides(:poise_service)
     actions(:enable, :disable, :start, :stop, :restart, :reload)
 
+    # @!attribute service_name
+    #   Name of the service to the underlying init system. Defaults to the name
+    #   of the resource.
+    #   @return [String]
     attribute(:service_name, kind_of: String, name_attribute: true)
+    # @!attribute command
+    #   Command to run inside the service. This command must remain in the
+    #   foreground and not daemoinize itself.
+    #   @return [String]
     attribute(:command, kind_of: String, required: true)
+    # @!attribute user
+    #   User to run the service as. See {UserResource} for an easy way to
+    #   create service users. Defaults to root.
+    #   @return [String]
     attribute(:user, kind_of: String, default: 'root')
+    # @!attribute directory
+    #   Working directory for the service. Defaults to the home directory of
+    #   the configured user or / if not found.
+    #   @return [String]
     attribute(:directory, kind_of: String, default: lazy { default_directory })
+    # @!attribute environment
+    #   Environment variables for the service.
+    #   @return [Hash]
     attribute(:environment, kind_of: Hash, default: {})
+    # @!attribute stop_signal
+    #   Signal to use to stop the service. Some systems will fall back to
+    #   KILL if this signal fails to stop the process. Defaults to TERM.
+    #   @return [String, Symbol, Integer]
     attribute(:stop_signal, kind_of: [String, Symbol, Integer], default: 'TERM')
+    # @!attribute reload_signal
+    #   Signal to use to reload the service. Defaults to HUP.
+    #   @return [String, Symbol, Integer]
     attribute(:reload_signal, kind_of: [String, Symbol, Integer], default: 'HUP')
+    # @!attribute restart_on_update
+    #   If true, the service will be restarted if the service definition or
+    #   configuration changes. If 'immediately', the notification will happen
+    #   in immediate mode.
+    #   @return [Boolean, String]
     attribute(:restart_on_update, equal_to: [true, false, 'immediately', :immediately], default: true)
 
+    # @overload options(val=nil)
+    #   Set or return service options for all providers.
+    #   @param val [Hash] Service options to set.
+    #   @return [Hash]
+    #   @example
+    #     poise_service 'myapp' do
+    #       options depends: 'network'
+    #     end
+    # @overload options(service_type, val=nil)
+    #   Set or return service options for a specific serivce provider.
+    #   @param service_type [Symbol] Service provider to set for.
+    #   @param val [Hash] Service options to set.
+    #   @return [Hash]
+    #   @example
+    #     poise_service 'myapp' do
+    #       options :upstart, reload_shim: true
+    #     end
     def options(service_type=nil, val=nil)
       key = :options
       if !val && service_type.is_a?(Hash)
