@@ -20,6 +20,18 @@ the `poise_service_options` resource. This is a technique called [dependency
 injection](https://en.wikipedia.org/wiki/Dependency_injection), and allows a
 measure of decoupling between the library and application cookbooks.
 
+### Why would I use poise-service?
+
+Poise-service is most useful for authors of library-style cookbooks, for example
+the `apache2`, `mysql`, or `application` cookbooks. When using other service
+management options with Chef, the author of the library cookbook has to add
+specific code for each service management framework they want to support, often
+resulting in a cookbook only supporting the favorite framework of the author or
+depending on distribution packages for their init scripts. The `poise_service`
+resource allows library cookbook authors a way to write generic code for all
+service management frameworks while still allowing users of that cookbook to
+choose which service management framework best fits their needs.
+
 ### How is this different from the built-in service resource?
 
 Chef includes a `service` resource which allows interacting with certain
