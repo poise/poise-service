@@ -14,13 +14,24 @@
 # limitations under the License.
 #
 
-require 'poise_service/options_resource'
-require 'poise_service/providers'
-require 'poise_service/resource'
-require 'poise_service/service_mixin'
-require 'poise_service/user_resource'
-require 'poise_service/utils'
+require 'net/http'
+require 'uri'
 
+require 'serverspec'
+set :backend, :exec
 
-module PoiseService
+describe 'poise_service_test_mixin' do
+  let(:port) { }
+  let(:url) { "http://localhost:#{port}/" }
+  subject { Net::HTTP.get(URI(url)) }
+
+  describe 'default' do
+    let(:port) { 4000 }
+    it { is_expected.to eq 'Hello world!'}
+  end
+
+  describe 'update' do
+    let(:port) { 4001 }
+    it { is_expected.to eq 'second' }
+  end
 end

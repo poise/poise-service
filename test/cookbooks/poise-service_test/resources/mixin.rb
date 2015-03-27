@@ -14,13 +14,11 @@
 # limitations under the License.
 #
 
-require 'poise_service/options_resource'
-require 'poise_service/providers'
-require 'poise_service/resource'
-require 'poise_service/service_mixin'
-require 'poise_service/user_resource'
-require 'poise_service/utils'
+include PoiseService::ServiceMixin
 
+attribute :message
+attribute :port
 
-module PoiseService
+def after_created
+  notifies(:restart, self)
 end

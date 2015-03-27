@@ -14,13 +14,21 @@
 # limitations under the License.
 #
 
-require 'poise_service/options_resource'
-require 'poise_service/providers'
-require 'poise_service/resource'
-require 'poise_service/service_mixin'
-require 'poise_service/user_resource'
-require 'poise_service/utils'
+# Integration tests for the mixin.
+poise_service_test_mixin 'default' do
+  service_name 'poise_mixin_default'
+  message 'Hello world!'
+  port 4000
+end
 
+poise_service_test_mixin 'update' do
+  service_name 'poise_mixin_update'
+  message 'first'
+  port 4001
+end
 
-module PoiseService
+poise_service_test_mixin 'update again' do
+  service_name 'poise_mixin_update'
+  message 'second'
+  port 4001
 end

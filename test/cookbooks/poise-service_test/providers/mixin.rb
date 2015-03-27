@@ -14,13 +14,28 @@
 # limitations under the License.
 #
 
-require 'poise_service/options_resource'
-require 'poise_service/providers'
-require 'poise_service/resource'
-require 'poise_service/service_mixin'
-require 'poise_service/user_resource'
-require 'poise_service/utils'
+include PoiseService::ServiceMixin
 
+def action_enable
+  notifying_block do
+    file "/usr/bin/poise_mixin_#{new_resource.service_name}" do
+      owner 'root'
+      group 'root'
+      mode '755'
+      content <<-EOH
+#!/opt/chef/embedded/bin/ruby
+require 'webrick'
+server = WEBrick::HTTPServer.new(Port: #{new_resource.port})
+server.mount_proc '/' do |req, res|
+  res.body = #{new_resource.message.inspect}
+end
+server.start
+EOH
+    end
+  end
+  super
+end
 
-module PoiseService
+def service_options(resource)
+  resource.command("/usr/bin/poise_mixin_#{new_resource.service_name}")
 end
