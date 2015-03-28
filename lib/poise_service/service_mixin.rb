@@ -43,6 +43,10 @@ module PoiseService
   #         end
   #         super
   #       end
+  #
+  #       def service_options(r)
+  #         r.command('myapp --serve')
+  #       end
   #     end
   #   end
   module ServiceMixin
