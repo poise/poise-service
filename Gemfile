@@ -39,3 +39,6 @@ gem 'foodcritic', github: 'acrmp/foodcritic'
 
 # Pending https://github.com/codecov/codecov-ruby/pull/2 in a release.
 gem 'codecov', github: 'codecov/codecov-ruby'
+
+# Until the 12.2.1 release happens
+gem 'chef', '12.1.2'
