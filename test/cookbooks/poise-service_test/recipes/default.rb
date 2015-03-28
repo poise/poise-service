@@ -14,70 +14,7 @@
 # limitations under the License.
 #
 
-# Write out the scripts to run as services.
-service_script = <<-EOH
-require 'webrick'
-require 'json'
-require 'etc'
-FILE_DATA = ''
-def load_file
-  FILE_DATA.replace(IO.read(ARGV[1]))
-end
-server = WEBrick::HTTPServer.new(Port: ARGV[0].to_i)
-server.mount_proc '/' do |req, res|
-  res.body = {
-    directory: Dir.getwd,
-    user: Etc.getpwuid(Process.uid).name,
-    group: Etc.getgrgid(Process.gid).name,
-    environment: ENV.to_hash,
-    file_data: FILE_DATA,
-    pid: Process.pid,
-  }.to_json
-end
-EOH
-
-file '/usr/bin/poise_test' do
-  owner 'root'
-  group 'root'
-  mode '755'
-  content <<-EOH
-#!/opt/chef/embedded/bin/ruby
-#{service_script}
-if ARGV[1]
-  load_file
-  trap('HUP') do
-    load_file
-  end
-end
-server.start
-EOH
-end
-
-file '/usr/bin/poise_test_noterm' do
-  owner 'root'
-  group 'root'
-  mode '755'
-  content <<-EOH
-#!/opt/chef/embedded/bin/ruby
-trap('HUP', 'IGNORE')
-trap('STOP', 'IGNORE')
-trap('TERM', 'IGNORE')
-#{service_script}
-while true
-  begin
-    server.start
-  rescue Exception
-  rescue StandardError
-  end
-end
-EOH
-end
-
 # Create the various services.
-poise_service_user 'poise' do
-  home '/tmp'
-end
-
 poise_service_test 'default' do
   base_port 5000
 end

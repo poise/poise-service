@@ -18,9 +18,12 @@ require 'poise_service/options_resource'
 require 'poise_service/providers'
 require 'poise_service/resource'
 require 'poise_service/service_mixin'
+require 'poise_service/test_resource'
 require 'poise_service/user_resource'
 require 'poise_service/utils'
 
 
 module PoiseService
+  # Not used during converge so I can safely autoload.
+  autoload :SpecHelper, 'poise_service/spec_helper'
 end
