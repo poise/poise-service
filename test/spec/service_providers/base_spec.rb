@@ -169,4 +169,63 @@ describe PoiseService::ServiceProviders::Base do
       its(:cookbook) { is_expected.to eq 'other'}
     end # /context with a template and cookbook override
   end # /describe #service_template
+
+  describe '#options' do
+    service_provider('dummy')
+    subject { chef_run.poise_service('test').provider_for_action(:enable).options }
+
+    context 'with an options resource' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          service_name 'other'
+        end
+
+        poise_service_options 'test' do
+          command 'myapp'
+        end
+      end
+
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+    end # /context with an options resource
+
+    context 'with an options resource using service_name' do
+      recipe(subject: false) do
+        poise_service 'test' do
+          service_name 'other'
+        end
+
+        poise_service_options 'other' do
+          command 'myapp'
+        end
+      end
+
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+    end # /context with an options resource using service_name
+
+    context 'with node attributes' do
+      before do
+        override_attributes['poise-service']['test'] = {command: 'myapp'}
+      end
+      recipe(subject: false) do
+        poise_service 'test' do
+          service_name 'other'
+        end
+      end
+
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+    end # /context with node attributes
+
+    context 'with node attributes using service_name' do
+      before do
+        override_attributes['poise-service']['other'] = {command: 'myapp'}
+      end
+      recipe(subject: false) do
+        poise_service 'test' do
+          service_name 'other'
+        end
+      end
+
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+    end # /context with node attributes using service_name
+  end # /describe #options
 end
