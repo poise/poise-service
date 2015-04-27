@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'poise_service/service_mixin'
+
 include PoiseService::ServiceMixin
 
 def action_enable
