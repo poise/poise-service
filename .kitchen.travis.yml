@@ -2,3 +2,8 @@
 driver:
   name: rackspace
   flavor_id: general1-1
+
+platforms:
+- name: centos-6.5
+  driver_config:
+    image_id: 6b025595-a83b-436b-b37d-d5b212b5ddfc # Actually 6.6
