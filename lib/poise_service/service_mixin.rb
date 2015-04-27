@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
-require 'poise_service/resource'
+require 'poise'
+
+require 'poise_service/resources/poise_service'
 
 
 module PoiseService
@@ -50,30 +52,34 @@ module PoiseService
   #     end
   #   end
   module ServiceMixin
+    include Poise::Utils::ResourceProviderMixin
+
     # Mixin for service wrapper resources.
     #
     # @see ServiceMixin
     module Resource
-      # @api private
-      def self.included(klass)
-        klass.class_exec do
-          include Poise unless klass.include?(Poise)
-          actions(:enable, :disable, :start, :stop, :restart, :reload)
-          attribute(:service_name, kind_of: String, name_attribute: true)
+      include Poise::Resource
+
+      module ClassMethods
+        # @api private
+        def included(klass)
+          super
+          klass.extend(ClassMethods)
+          klass.class_exec do
+            actions(:enable, :disable, :start, :stop, :restart, :reload)
+            attribute(:service_name, kind_of: String, name_attribute: true)
+          end
         end
       end
+
+      extend ClassMethods
     end
 
     # Mixin for service wrapper providers.
     #
     # @see ServiceMixin
     module Provider
-      # @api private
-      def self.included(klass)
-        klass.class_exec do
-          include Poise unless klass.include?(Poise)
-        end
-      end
+      include Poise::Provider
 
       # Default enable action for service wrappers.
       #
@@ -180,19 +186,6 @@ module PoiseService
       #     resource.command('myapp --serve')
       #   end
       def service_options(resource)
-        raise NotImplementedError
-      end
-    end
-
-    # Delegate to the correct mixin based on the type of class.
-    #
-    # @api private
-    def self.included(klass)
-      super
-      if klass < Chef::Resource
-        klass.class_exec { include PoiseService::ServiceMixin::Resource}
-      elsif klass < Chef::Provider
-        klass.class_exec { include PoiseService::ServiceMixin::Provider}
       end
     end
   end
