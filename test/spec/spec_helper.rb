@@ -35,7 +35,11 @@ module PoiseServiceHelper
   def service_resource_hints(hints, &block)
     hints ||= block.call if block
     before do
-      PoiseService::Providers::Base.remove_class_variable(:@@service_resource_hints) rescue nil
+      begin
+        PoiseService::ServiceProviders::Base.remove_class_variable(:@@service_resource_hints)
+      rescue NameError
+        # This space left intentionally blank.
+      end
       allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return(Array(hints))
     end
   end
