@@ -22,12 +22,12 @@ module PoiseServiceHelper
   def service_provider(name=nil, provider, &block)
     provider ||= block.call if block
     before do
-      default_attributes['poise-service'] ||= {}
+      override_attributes['poise-service'] ||= {}
       if name
-        default_attributes['poise-service'][name] ||= {}
-        default_attributes['poise-service'][name]['provider'] = provider
+        override_attributes['poise-service'][name] ||= {}
+        override_attributes['poise-service'][name]['provider'] = provider
       else
-        default_attributes['poise-service']['provider'] = provider
+        override_attributes['poise-service']['provider'] = provider
       end
     end
   end
