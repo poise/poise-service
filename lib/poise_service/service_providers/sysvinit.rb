@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-require 'poise_service/providers/base'
+require 'poise_service/service_providers/base'
 
 
 module PoiseService
-  module Providers
+  module ServiceProviders
     class Sysvinit < Base
-      poise_service_provides(:sysvinit)
+      provides(:sysvinit)
 
       def self.provides_auto?(node, resource)
         [:debian, :redhat, :invokercd].any? {|name| service_resource_hints.include?(name) }

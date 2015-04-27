@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::Providers::Sysvinit do
+describe PoiseService::ServiceProviders::Sysvinit do
   service_provider('sysvinit')
   step_into(:poise_service)
   recipe do
@@ -37,8 +37,8 @@ EOH
 
     context 'with an external PID file' do
       before do
-        default_attributes['poise-service']['test'] ||= {}
-        default_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+        override_attributes['poise-service']['test'] ||= {}
+        override_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
       end
 
       it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
@@ -61,8 +61,8 @@ EOH
 
     context 'with an external PID file' do
       before do
-        default_attributes['poise-service']['test'] ||= {}
-        default_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+        override_attributes['poise-service']['test'] ||= {}
+        override_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
       end
 
       it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }

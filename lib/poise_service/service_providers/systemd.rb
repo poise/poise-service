@@ -16,16 +16,17 @@
 
 require 'chef/mixin/shell_out'
 
-require 'poise_service/providers/base'
+require 'poise_service/service_providers/base'
+
 
 module PoiseService
-  module Providers
+  module ServiceProviders
     class Systemd < Base
       include Chef::Mixin::ShellOut
-      poise_service_provides(:systemd)
+      provides(:systemd)
 
       def self.provides_auto?(node, resource)
-        # Don't allow systemd under docker, it won't work.
+        # Don't allow systemd under docker, it won't work in most cases.
         return false if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
         service_resource_hints.include?(:systemd)
       end

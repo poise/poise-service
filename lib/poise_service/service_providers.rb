@@ -14,29 +14,24 @@
 # limitations under the License.
 #
 
-require 'chef/node_map'
 require 'chef/platform/provider_priority_map'
 
-module PoiseService
-  module Providers
-    def self.provider_map
-      @provider_map ||= Chef::NodeMap.new
-    end
+require 'poise_service/service_providers/dummy'
+require 'poise_service/service_providers/systemd'
+require 'poise_service/service_providers/sysvinit'
+require 'poise_service/service_providers/upstart'
 
-    def self.provider_for(node, name)
-      provider_map.get(node, name.to_sym)
-    end
+
+module PoiseService
+  # Inversion providers for the poise_service resource.
+  #
+  # @since 1.0.0
+  module ServiceProviders
+    # Set up priority maps
+    Chef::Platform::ProviderPriorityMap.instance.priority(:poise_service, [
+      PoiseService::ServiceProviders::Systemd,
+      PoiseService::ServiceProviders::Upstart,
+      PoiseService::ServiceProviders::Sysvinit,
+    ])
   end
 end
-
-require 'poise_service/providers/dummy'
-require 'poise_service/providers/systemd'
-require 'poise_service/providers/sysvinit'
-require 'poise_service/providers/upstart'
-
-# Set up priority maps
-Chef::Platform::ProviderPriorityMap.instance.priority(:poise_service, [
-  PoiseService::Providers::Systemd,
-  PoiseService::Providers::Upstart,
-  PoiseService::Providers::Sysvinit,
-])

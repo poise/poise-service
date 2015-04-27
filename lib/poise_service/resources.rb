@@ -14,12 +14,15 @@
 # limitations under the License.
 #
 
+require 'poise_service/resources/poise_service'
+require 'poise_service/resources/poise_service_test'
+require 'poise_service/resources/poise_service_user'
+
 
 module PoiseService
-  autoload :Error, 'poise_service/error'
-  autoload :Resources, 'poise_service/resources'
-  autoload :ServiceMixin, 'poise_service/service_mixin'
-  autoload :ServiceProviders, 'poise_service/service_providers'
-  autoload :Utils, 'poise_service/utils'
-  autoload :VERSION, 'poise_service/version'
+  # Chef resources and providers for poise-service.
+  #
+  # @since 1.0.0
+  module Resources
+  end
 end

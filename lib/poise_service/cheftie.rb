@@ -14,12 +14,5 @@
 # limitations under the License.
 #
 
-
-module PoiseService
-  autoload :Error, 'poise_service/error'
-  autoload :Resources, 'poise_service/resources'
-  autoload :ServiceMixin, 'poise_service/service_mixin'
-  autoload :ServiceProviders, 'poise_service/service_providers'
-  autoload :Utils, 'poise_service/utils'
-  autoload :VERSION, 'poise_service/version'
-end
+require 'poise_service/resources'
+require 'poise_service/service_providers'

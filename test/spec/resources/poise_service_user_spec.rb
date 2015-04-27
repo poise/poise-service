@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::UserResource do
+describe PoiseService::Resources::PoiseServiceUser do
   step_into(:poise_service_user)
   recipe do
     poise_service_user 'poise'

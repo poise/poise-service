@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::Resource do
+describe PoiseService::Resources::PoiseService::Resource do
   service_provider('auto')
   service_resource_hints(%i{debian redhat upstart systemd})
 
@@ -25,7 +25,7 @@ describe PoiseService::Resource do
       poise_service 'test'
     end
     subject do
-      chef_run.find_resource(:poise_service, 'test').provider_for_action(:enable).class.poise_service_provides
+      chef_run.find_resource(:poise_service, 'test').provider_for_action(:enable).class.provides
     end
 
     context 'auto on debian' do

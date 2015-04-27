@@ -16,11 +16,12 @@
 
 require 'spec_helper'
 
-describe PoiseService::Providers::Dummy do
+describe PoiseService::ServiceProviders::Dummy do
   service_provider('dummy')
   step_into(:poise_service)
   before do
     allow(Process).to receive(:fork).and_return(0)
+    allow(Process).to receive(:kill).with(0, 100)
     allow(File).to receive(:exists?).and_call_original
     allow(File).to receive(:exists?).with('/var/run/test.pid').and_return(true)
     allow(IO).to receive(:read).and_call_original

@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::Providers::Upstart do
+describe PoiseService::ServiceProviders::Upstart do
   describe '#action_enable' do
     service_provider('upstart')
     step_into(:poise_service)

@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::Providers::Base do
+describe PoiseService::ServiceProviders::Base do
   let(:new_resource) { double('new_resource') }
   let(:run_context) { double('run_context') }
   let(:service_resource) do

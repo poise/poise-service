@@ -16,7 +16,7 @@
 
 require 'spec_helper'
 
-describe PoiseService::Providers::Systemd do
+describe PoiseService::ServiceProviders::Systemd do
   service_provider('systemd')
   step_into(:poise_service)
   recipe do

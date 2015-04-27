@@ -20,13 +20,14 @@ require 'shellwords'
 require 'chef/mixin/shell_out'
 
 require 'poise_service/error'
-require 'poise_service/providers/base'
+require 'poise_service/service_providers/base'
+
 
 module PoiseService
-  module Providers
+  module ServiceProviders
     class Upstart < Base
       include Chef::Mixin::ShellOut
-      poise_service_provides(:upstart)
+      provides(:upstart)
 
       def self.provides_auto?(node, resource)
         # Don't allow upstart under docker, it won't work.

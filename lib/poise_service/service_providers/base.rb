@@ -19,58 +19,37 @@ require 'poise'
 
 
 module PoiseService
-  module Providers
+  module ServiceProviders
     class Base < Chef::Provider
-      include Poise
+      include Poise(inversion: :poise_service)
 
-      # Poise-service version of provides() to set the name and register with the map.
-      def self.poise_service_provides(val=nil, opts={}, &block)
-        if val
-          @poise_service_provider = val
-          PoiseService::Providers.provider_map.set(val.to_sym, self, opts, &block)
-        end
-        @poise_service_provider
-      end
-
-      def self.provides?(node, resource)
-        return false unless resource.resource_name == :poise_service
-        provider_name = (node['poise-service'][resource.name] && node['poise-service'][resource.name]['provider']) || node['poise-service']['provider']
-        provider_name == poise_service_provides.to_s || ( provider_name == 'auto' && provides_auto?(node, resource) )
-      end
-
-      # Subclass hook to provide auto-detection for service providers.
+      # Extend the default lookup behavior to check for service_name too.
       #
-      # @param node [Chef::Node] Node to check against.
-      # @param resource [Chef::Resource] Resource to check against.
-      # @return [Boolean]
-      def self.provides_auto?(node, resource)
-        false
+      # @api private
+      def self.resolve_inversion_provider(node, resource)
+        attrs = resolve_inversion_attribute(node)
+        (attrs[resource.service_name] && attrs[resource.service_name]['provider']) || super
       end
 
-      # Cache this forever because it runs a dozen or so stats every time and I call it a lot.
+      # Extend the default options to check for service_name too.
+      #
+      # @api private
+      def self.inversion_options(node, resource)
+        super.tap do |opts|
+          attrs = resolve_inversion_attribute(node)
+          opts.update(attrs[resource.service_name]) if attrs[resource.service_name]
+          run_state = Mash.new(node.run_state.fetch('poise_inversion', {}).fetch(inversion_resource, {}))[resource.service_name] || {}
+          opts.update(run_state['*']) if run_state['*']
+          opts.update(run_state[provides]) if run_state[provides]
+        end
+      end
+
+      # Cache the service hints to improve performance. This is called from the
+      # provides_auto? on most service providers and hits the filesystem a lot.
+      #
+      # @return [Array<Symbol>]
       def self.service_resource_hints
         @@service_resource_hints ||= Chef::Platform::ServiceHelpers.service_resource_providers
-      end
-
-      # Helper for subclasses to compile the sources of service-level options.
-      # Only used internally but has to be public for the scope-promotion in
-      # Chef::Resource (enclosing_provider) to work correctly.
-      #
-      # @return [Hash]
-      def options
-        @options ||= Mash.new.tap do |opts|
-          opts.update(new_resource.options)
-          if node['poise-service']['options']
-            opts.update(node['poise-service']['options'])
-          end
-          opts.update(new_resource.options(self.class.poise_service_provides))
-          if node['poise-service'][new_resource.service_name]
-            opts.update(node['poise-service'][new_resource.service_name])
-          end
-          if node['poise-service'][new_resource.name]
-            opts.update(node['poise-service'][new_resource.name])
-          end
-        end
       end
 
       def action_enable

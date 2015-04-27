@@ -165,7 +165,7 @@ module PoiseService
       # @example
       #   service_resource.run_action(:restart)
       def service_resource
-        @service_resource ||= PoiseService::Resource.new(new_resource.name, run_context).tap do |r|
+        @service_resource ||= PoiseService::Resources::PoiseService::Resource.new(new_resource.name, run_context).tap do |r|
           # Set some defaults.
           r.enclosing_provider = self
           r.source_line = new_resource.source_line

@@ -14,12 +14,13 @@
 # limitations under the License.
 #
 
-require 'poise_service/providers/base'
+require 'poise_service/service_providers/base'
+
 
 module PoiseService
-  module Providers
+  module ServiceProviders
     class Dummy < Base
-      poise_service_provides(:dummy)
+      provides(:dummy)
 
       def action_start
         return if pid
@@ -60,7 +61,15 @@ module PoiseService
       end
 
       def pid
-        IO.read(pid_file).to_i if ::File.exists?(pid_file)
+        return nil unless ::File.exists?(pid_file)
+        pid = IO.read(pid_file).to_i
+        begin
+          # Check if the PID is running.
+          Process.kill(0, pid)
+          pid
+        rescue Errno::ESRCH
+          nil
+        end
       end
 
       private
