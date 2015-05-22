@@ -18,15 +18,10 @@ source 'https://rubygems.org/'
 
 gemspec path: File.expand_path('..', __FILE__)
 
-def dev_gem(name, path: nil, github: nil)
-  path ||= File.join('..', name)
-  github ||= "#{name.include?('poise') ? 'poise' : 'coderanger'}/#{name}"
-  github = "#{github}/#{name}" unless github.include?('/')
+def dev_gem(name, path: File.join('..', name))
   path = File.expand_path(File.join('..', path), __FILE__)
   if File.exist?(path)
     gem name, path: path
-  else
-    gem name, github: github
   end
 end
 
@@ -36,6 +31,3 @@ dev_gem 'poise-boiler'
 
 # Pending https://github.com/acrmp/foodcritic/pull/312 in a release.
 gem 'foodcritic', github: 'acrmp/foodcritic'
-
-# Pending https://github.com/codecov/codecov-ruby/pull/2 in a release.
-gem 'codecov', github: 'codecov/codecov-ruby'
