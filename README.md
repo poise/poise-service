@@ -355,7 +355,7 @@ end
 ```
 
 See [the poise_service_test_mixin resource](test/cookbooks/poise-service_test/resources/mixin.rb)
-and [provider](test/cookbooks/poise-service_test/resources/mixin.rb) for
+and [provider](test/cookbooks/poise-service_test/providers/mixin.rb) for
 examples of using `ServiceMixin` in an LWRP.
 
 ## Sponsors
