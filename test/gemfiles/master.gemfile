@@ -16,4 +16,7 @@
 
 eval_gemfile File.expand_path('../../Gemfile', __FILE__)
 
-gem 'chef', '~> 12.0'
+gem 'chef', github: 'chef/chef'
+#gem 'halite', github: 'poise/halite'
+#gem 'poise', githib: 'poise/poise'
+#gem 'poise-boiler', githib: 'poise/poise-boiler'

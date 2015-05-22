@@ -1,6 +1,10 @@
 sudo: false
 cache: bundler
 language: ruby
+addons:
+  apt:
+    packages:
+    - libgecode-dev
 rvm:
 - 2.1.4
 env:
@@ -11,18 +15,9 @@ env:
   - secure: XpFA4AwBW5v4o3IuwKVSCTeVr6jXsW13T6ShGPpru4q+W2Zpcwh1qyBbxkkIWlkNjbhAT7G0HzQOqYcvUssYLEUYUNSlN10hxjpTZxvVj5sGjjhS3iTXbSop0NXzQthNRHfVZeK9ZWc+zP1MHGImjGCkErkin1+vu/SwMfIl2/8=
   - secure: k36byJyrxjPXKqMjlhojJJwA3iTgVcy1z8zJzUMf0v6JGLsbLbMLfOxkTwIhuLZ3mFEQHvv0TZ8rm84Mg8pYb95fChF2rZNHasRDDB5rFBd++HaYirSC0kndXpZ5gLBhSZXggDv8ROANgKwgWmI0PDDZz96rR/tPDD7edZIvgfc=
   - secure: OZhgvnu2op+rxg6ECSYlWGwaD1xIyOhzQtxqwzA4F/59RiR667JWaSTAmdEDN6SKmrqphxmZatzDEVXLaidbzAC0yAVv7zt4JbkLLZwmLFpq0YL+128sjgI4iUXomJhLxFqZyl8xmDhbu2pZLVyIR0S5Y0VUnu4kTmKDpvBwYsA=
-before_install:
-- curl -o ~/gecode.tar.gz https://poise-gecode.s3.amazonaws.com/gecode-3.7.3-ubuntu12.04-x86_64.tar.gz
-- tar xzf ~/gecode.tar.gz -C ~
-- rm ~/gecode.tar.gz
-- bundle config build.dep_selector "--with-cflags=\"-I$HOME/gecode-3.7.3/include\"
-  --with-cppflags=\"-I$HOME/gecode-3.7.3/include\" --with-ldflags=\"-L$HOME/gecode-3.7.3/lib
-  -Wl,-rpath=$HOME/gecode-3.7.3/lib\""
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
-- "./bin/rake spec"
-- "./bin/rake chef:foodcritic"
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ssh-keygen -f ~/.ssh/id_rsa -b 768 -P ''; fi
-- if [ "$TRAVIS_SECURE_ENV_VARS" = true ]; then ./bin/kitchen test -d always; fi
+- "./bin/rake travis"
 gemfile:
 - test/gemfiles/chef-12.gemfile
+- test/gemfiles/master.gemfile
