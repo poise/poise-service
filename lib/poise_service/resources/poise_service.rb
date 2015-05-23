@@ -16,6 +16,7 @@
 
 require 'etc'
 
+require 'chef/mash'
 require 'chef/resource'
 require 'poise'
 
@@ -71,7 +72,7 @@ module PoiseService
         # @!attribute environment
         #   Environment variables for the service.
         #   @return [Hash]
-        attribute(:environment, kind_of: Hash, default: {})
+        attribute(:environment, kind_of: Hash, default: lazy { Mash.new })
         # @!attribute stop_signal
         #   Signal to use to stop the service. Some systems will fall back to
         #   KILL if this signal fails to stop the process. Defaults to TERM.
