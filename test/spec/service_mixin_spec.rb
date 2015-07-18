@@ -49,7 +49,7 @@ describe PoiseService::ServiceMixin::Resource do
       include PoiseService::ServiceMixin::Resource
     end
 
-    its(:action) { is_expected.to eq :doit }
+    it { expect(Array(subject.action)).to eq %i{doit} }
     its(:allowed_actions) { is_expected.to eq %i{nothing doit enable disable start stop restart reload} }
     its(:service_name) { is_expected.to eq 'test' }
   end # /context with Poise already included
@@ -60,7 +60,7 @@ describe PoiseService::ServiceMixin::Resource do
       actions(:doit)
     end
 
-    its(:action) { is_expected.to eq :enable }
+    it { expect(Array(subject.action)).to eq %i{enable} }
     its(:allowed_actions) { is_expected.to eq %i{nothing enable disable start stop restart reload doit} }
     its(:service_name) { is_expected.to eq 'test' }
   end # /context without Poise already included
