@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'poise_service/resources/poise_service_test'
+
 # Create the various services.
 poise_service_test 'default' do
   base_port 5000
