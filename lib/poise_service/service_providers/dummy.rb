@@ -24,29 +24,37 @@ module PoiseService
 
       def action_start
         return if pid
+        Chef::Log.debug("[#{new_resource}] Starting #{new_resource.command}")
         # Clear the pid file if it exists.
         ::File.unlink(pid_file) if ::File.exist?(pid_file)
         if Process.fork
           # Parent, wait for the final child to write the pid file.
           until ::File.exist?(pid_file)
             sleep(1)
+            Chef::Log.debug("[#{new_resource}] Waiting for PID file")
           end
         else
           # :nocov:
+          Chef::Log.debug("[#{new_resource}] Forked")
           # First child, daemonize and go to town.
           Process.daemon(true)
+          Chef::Log.debug("[#{new_resource}] Daemonized")
           # Daemonized, set up process environment.
           Dir.chdir(new_resource.directory)
+          Chef::Log.debug("[#{new_resource}] Directory changed to #{new_resource.directory}")
           new_resource.environment.each do |key, val|
             ENV[key.to_s] = val.to_s
           end
           Process.uid = new_resource.user
+          Chef::Log.debug("[#{new_resource}] Process environment configured")
           IO.write(pid_file, Process.pid)
+          Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}, execing #{new_resource.command}")
           Kernel.exec(new_resource.command)
           # Just in case, bail out.
           exit!
           # :nocov:
         end
+        Chef::Log.debug("[#{new_resource}] Started.")
       end
 
       def action_stop
