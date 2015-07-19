@@ -41,6 +41,8 @@ module PoiseService
           Process.uid = new_resource.user
           IO.write(pid_file, Process.pid)
           Kernel.exec(new_resource.command)
+          # Just in case, bail out.
+          exit!
           # :nocov:
         end
       end
