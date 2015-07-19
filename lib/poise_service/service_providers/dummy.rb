@@ -65,7 +65,7 @@ module PoiseService
       end
 
       def pid
-        return nil unless ::File.exists?(pid_file)
+        return nil unless ::File.exist?(pid_file)
         pid = IO.read(pid_file).to_i
         begin
           # Check if the PID is running.
