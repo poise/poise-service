@@ -24,9 +24,11 @@ module PoiseService
 
       def action_start
         return if pid
+        # Clear the pid file if it exists.
+        ::File.unlink(pid_file) if ::File.exist?(pid_file)
         if Process.fork
           # Parent, wait for the final child to write the pid file.
-          until pid
+          until ::File.exist?(pid_file)
             sleep(1)
           end
         else
