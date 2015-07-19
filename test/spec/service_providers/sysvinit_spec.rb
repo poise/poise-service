@@ -85,8 +85,8 @@ EOH
   describe '#pid' do
     subject { described_class.new(nil, nil) }
     before do
-      allow(File).to receive(:exists?).and_call_original
-      allow(File).to receive(:exists?).with('/pid').and_return(true)
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/pid').and_return(true)
       allow(IO).to receive(:read).and_call_original
       allow(IO).to receive(:read).with('/pid').and_return('100')
       expect(subject).to receive(:pid_file).and_return('/pid').at_least(:once)

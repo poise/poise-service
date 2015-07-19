@@ -28,15 +28,15 @@ describe 'default provider' do
   end
 end
 
-describe 'sysvinit provider', unless: File.exists?('/no_sysvinit') do
+describe 'sysvinit provider', unless: File.exist?('/no_sysvinit') do
   it_should_behave_like 'a poise_service_test', 'sysvinit', 6000
 end
 
-describe 'upstart provider', unless: File.exists?('/no_upstart') do
+describe 'upstart provider', unless: File.exist?('/no_upstart') do
   it_should_behave_like 'a poise_service_test', 'upstart', 7000, !old_upstart
 end
 
-describe 'systemd provider', unless: File.exists?('/no_systemd') do
+describe 'systemd provider', unless: File.exist?('/no_systemd') do
   it_should_behave_like 'a poise_service_test', 'systemd', 8000
 end
 

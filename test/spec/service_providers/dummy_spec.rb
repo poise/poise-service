@@ -22,15 +22,15 @@ describe PoiseService::ServiceProviders::Dummy do
   before do
     allow(Process).to receive(:fork).and_return(0)
     allow(Process).to receive(:kill).with(0, 100)
-    allow(File).to receive(:exists?).and_call_original
-    allow(File).to receive(:exists?).with('/var/run/test.pid').and_return(true)
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with('/var/run/test.pid').and_return(true)
     allow(IO).to receive(:read).and_call_original
     allow(IO).to receive(:read).with('/var/run/test.pid').and_return('100')
   end
 
   describe '#action_enable' do
     before do
-      allow(File).to receive(:exists?).with('/var/run/test.pid').and_return(false, false, true)
+      allow(File).to receive(:exist?).with('/var/run/test.pid').and_return(false, false, false, true)
       expect_any_instance_of(described_class).to receive(:sleep).with(1).once
     end
     recipe do

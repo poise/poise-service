@@ -179,8 +179,8 @@ describe PoiseService::Resources::PoiseService::Resource do
     service_provider('sysvinit')
     step_into(:poise_service)
     before do
-      allow(File).to receive(:exists?).and_call_original
-      allow(File).to receive(:exists?).with('/etc/init.d/test').and_return(true)
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/etc/init.d/test').and_return(true)
     end
     subject { chef_run.template('/etc/init.d/test') }
 
