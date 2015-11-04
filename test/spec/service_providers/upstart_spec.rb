@@ -45,7 +45,7 @@ respawn limit 10 5
 umask 022
 chdir /
 
-exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "root"; ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
+exec /opt/chef/embedded/bin/ruby -e 'Process::UID.change_privilege("root"); ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
 EOH
 
       context 'with a stop signal' do
@@ -69,7 +69,7 @@ respawn limit 10 5
 umask 022
 chdir /
 
-exec /opt/chef/embedded/bin/ruby -e 'Process.uid = "root"; ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
+exec /opt/chef/embedded/bin/ruby -e 'Process::UID.change_privilege("root"); ENV["HOME"] = Dir.home("root") rescue nil; exec(*["myapp", "--serve"])'
 pre-stop script
   PID=`initctl status test | sed 's/^.*process \\([0-9]*\\)$/\\1/'`
   if [ -n "$PID" ]; then
