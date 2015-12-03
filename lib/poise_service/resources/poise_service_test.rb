@@ -187,6 +187,7 @@ EOH
             end
           end
 
+          # Test the #pid accessor.
           ruby_block "/tmp/poise_test_#{new_resource.name}_pid" do
             block do
               pid = resources("poise_service[poise_test_#{new_resource.name}]").pid
