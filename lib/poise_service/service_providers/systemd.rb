@@ -48,8 +48,18 @@ module PoiseService
         end
       end
 
+      def systemctl_daemon_reload
+        execute 'systemctl daemon-reload' do
+          action :nothing
+          user 'root'
+        end
+      end
+
       def create_service
-        service_template("/etc/systemd/system/#{new_resource.service_name}.service", 'systemd.service.erb')
+        reloader = systemctl_daemon_reload
+        service_template("/etc/systemd/system/#{new_resource.service_name}.service", 'systemd.service.erb') do
+          notifies :run, reloader, :immediately
+        end
       end
 
       def destroy_service
