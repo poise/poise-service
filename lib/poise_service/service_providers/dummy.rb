@@ -49,6 +49,7 @@ module PoiseService
           # Daemonized, set up process environment.
           Dir.chdir(new_resource.directory)
           Chef::Log.debug("[#{new_resource}] Directory changed to #{new_resource.directory}")
+          ENV['HOME'] = Dir.home(new_resource.user)
           new_resource.environment.each do |key, val|
             ENV[key.to_s] = val.to_s
           end
