@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /opt/chef/embedded/bin/ruby -e 'IO.write("<%= @pid_file %>", Process.pid); Dir.chdir("<%= @directory %>"); Process::UID.change_privilege("<%= @user %>"); ENV["HOME"] = Dir.home("<%= @user %>") rescue nil; <%= @environment.map {|key, value| "ENV[\"#{key}\"] = \"#{value}\"" }.join("; ") %>; exec(*<%= Shellwords.split(@command).inspect %>)'
