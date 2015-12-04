@@ -11,10 +11,6 @@
 # Description: Init script for <%= @name %>
 ### END INIT INFO
 
-<%- @environment.each do |key, val| -%>
-export <%= key %>="<%= val %>"
-<%- end -%>
-
 <%- if @platform_family == 'debian' -%>
 . /lib/lsb/init-functions
 
@@ -124,6 +120,9 @@ start() {
   fi
 }
 
+<%- @environment.each do |key, val| -%>
+export <%= key %>="<%= val %>"
+<%- end -%>
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
 case "$1" in
