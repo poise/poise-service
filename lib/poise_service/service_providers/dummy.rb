@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'shellwords'
+
 require 'poise_service/service_providers/base'
 
 
@@ -55,9 +57,11 @@ module PoiseService
           end
           Chef::Log.debug("[#{new_resource}] Process environment configured")
           IO.write(pid_file, Process.pid)
-          Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}, execing #{new_resource.command}")
-          Kernel.exec(new_resource.command)
+          Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}, dropping privs and execing")
           Process::UID.change_privilege(new_resource.user)
+          # Split the command so we don't get an extra sh -c.
+          Chef::Log.debug("[#{new_resource}] Execing #{new_resource.command}")
+          Kernel.exec(*Shellwords.split(new_resource.command))
           # Just in case, bail out.
           exit!
           # :nocov:
