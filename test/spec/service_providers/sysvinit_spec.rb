@@ -54,9 +54,10 @@ EOH
     let(:chefspec_options) { { platform: 'centos', version: '7.0'} }
 
     it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
-  ( cd "/" && daemon --user "root" --pidfile "/var/run/test.pid" "myapp --serve" >/dev/null 2>&1 ) &
-  sleep 1 # Give it some time to start before checking for a pid
-  _pid "myapp" > "/var/run/test.pid" || return 3
+  Dir.chdir("/")
+  IO.write(pid_file, Process.pid)
+  Process::UID.change_privilege("root")
+  Kernel.exec(*["myapp", "--serve"])
 EOH
 
     context 'with an external PID file' do
@@ -66,7 +67,9 @@ EOH
       end
 
       it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
-  ( cd "/" && daemon --user "root" --pidfile "/tmp/pid" "myapp --serve" >/dev/null 2>&1 ) &
+  Dir.chdir("/")
+  Process::UID.change_privilege("root")
+  Kernel.exec(*["myapp", "--serve"])
 EOH
     end # /context with an external PID file
   end # /context on CentOS
