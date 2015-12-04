@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.3
+
+* [#10](https://github.com/poise/poise-service/pull/10) Fixes for ensuring services are restarted when their command or user changes.
+
 ## v1.0.2
 * Fix a potential infinite loop when starting a service with the dummy provider.
 * [#2](https://github.com/poise/poise-service/pull/2) Remove usage of root
