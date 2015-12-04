@@ -122,6 +122,10 @@ module PoiseService
         file run_file do
           action :delete
         end
+
+        file pid_file do
+          action :delete
+        end
       end
 
       # Path to the run parameters tracking file.
