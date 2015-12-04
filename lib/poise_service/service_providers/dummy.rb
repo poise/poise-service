@@ -94,15 +94,30 @@ module PoiseService
       def enable_service
       end
 
+      # Write all major service parameters to a file so that if they change, we
+      # can restart the service. This also makes debuggin a bit easier so you
+      # can still see what it thinks it was starting without sifting through
+      # piles of debug output.
       def create_service
+        service_template(run_file, 'dummy.json.erb')
       end
 
       def disable_service
       end
 
+      # Delete the tracking file.
       def destroy_service
+        file run_file do
+          action :delete
+        end
       end
 
+      # Path to the run parameters tracking file.
+      def run_file
+        "/var/run/#{new_resource.service_name}.json"
+      end
+
+      # Path to the PID file.
       def pid_file
         "/var/run/#{new_resource.service_name}.pid"
       end
