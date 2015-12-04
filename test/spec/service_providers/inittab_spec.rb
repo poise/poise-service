@@ -129,6 +129,18 @@ EOH
 
       it { is_expected.to_not render_file('/etc/inittab') }
     end # /context with an existing line that matches
+
+    context 'with a long service_id' do
+      recipe do
+        poise_service 'a'*1000 do
+          command 'myapp --serve'
+        end
+      end
+      it { is_expected.to render_file('/etc/inittab').with_content(eq(<<-EOH)) }
+# poise_service[#{'a'*1000}]
+22ug:2345:respawn:/sbin/poise_service_#{'a'*1000}
+EOH
+    end # /context with a long service_id
   end # /context with action :enable
 
   context 'with action :disable' do
@@ -206,6 +218,44 @@ EOH
     it { expect { subject }.to raise_error NotImplementedError }
   end # /context with action :stop
 
+  context 'with action :restart' do
+    recipe do
+      poise_service 'test' do
+        action :restart
+      end
+    end
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/var/run/test.pid').and_return(true)
+      allow(IO).to receive(:read).and_call_original
+      allow(IO).to receive(:read).with('/var/run/test.pid').and_return('100')
+    end
+
+    it do
+      expect(Process).to receive(:kill).with('TERM', 100)
+      run_chef
+    end
+  end # /context with action :restart
+
+  context 'with action :reload' do
+    recipe do
+      poise_service 'test' do
+        action :reload
+      end
+    end
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with('/var/run/test.pid').and_return(true)
+      allow(IO).to receive(:read).and_call_original
+      allow(IO).to receive(:read).with('/var/run/test.pid').and_return('100')
+    end
+
+    it do
+      expect(Process).to receive(:kill).with('HUP', 100)
+      run_chef
+    end
+  end # /context with action :reload
+
   describe '#pid' do
     subject { described_class.new(nil, nil) }
     before do
@@ -217,4 +267,9 @@ EOH
     end
     its(:pid) { is_expected.to eq 100 }
   end # /describe #pid
+
+  describe '#service_resource' do
+    subject { described_class.new(nil, nil).send(:service_resource) }
+    it { expect { subject }.to raise_error NotImplementedError }
+  end # /describe #service_resource
 end
