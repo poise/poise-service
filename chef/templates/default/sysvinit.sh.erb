@@ -50,7 +50,7 @@ _start() {
   sleep 1 # Give it some time to start before checking for a pid
   _pid "<%= @daemon %>" > "<%= @pid_file %>" || return 3
 <%- end -%>
-  return 0 # ¯\_(ツ)_/¯
+  return 0 <%# ¯\_(ツ)_/¯ %>
 }
 
 _stop() {
@@ -73,7 +73,7 @@ _reload() {
   fi
 }
 
-<%- # Some functions to match LSB because RHEL doesn't (╯°□°）╯︵ ┻━┻ -%>
+<%# Some functions to match LSB because RHEL doesn't (╯°□°）╯︵ ┻━┻ %>
 
 log_daemon_msg() {
   echo -n "$1"
