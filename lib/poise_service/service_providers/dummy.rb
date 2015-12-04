@@ -29,9 +29,16 @@ module PoiseService
         ::File.unlink(pid_file) if ::File.exist?(pid_file)
         if Process.fork
           # Parent, wait for the final child to write the pid file.
+          now = Time.now
           until ::File.exist?(pid_file)
             sleep(1)
-            Chef::Log.debug("[#{new_resource}] Waiting for PID file")
+            # After 30 seconds, show output at a higher level to avoid too much
+            # confusing on failed process launches.
+            if Time.now - now <= 30
+              Chef::Log.debug("[#{new_resource}] Waiting for PID file")
+            else
+              Chef::Log.warning("[#{new_resource}] Waiting for PID file at #{pid_file} to be created")
+            end
           end
         else
           # :nocov:
