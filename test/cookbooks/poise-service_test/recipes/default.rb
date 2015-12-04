@@ -37,9 +37,13 @@ else
     base_port 6000
   end
 
-  poise_service_test 'upstart' do
-    service_provider :upstart
-    base_port 7000
+  if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('5')
+    file '/no_upstart'
+  else
+    poise_service_test 'upstart' do
+      service_provider :upstart
+      base_port 7000
+    end
   end
 end
 
