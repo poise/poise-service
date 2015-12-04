@@ -52,11 +52,11 @@ module PoiseService
           new_resource.environment.each do |key, val|
             ENV[key.to_s] = val.to_s
           end
-          Process.uid = new_resource.user
           Chef::Log.debug("[#{new_resource}] Process environment configured")
           IO.write(pid_file, Process.pid)
           Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}, execing #{new_resource.command}")
           Kernel.exec(new_resource.command)
+          Process::UID.change_privilege(new_resource.user)
           # Just in case, bail out.
           exit!
           # :nocov:
