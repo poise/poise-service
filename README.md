@@ -47,6 +47,8 @@ framework is used.
 * Upstart
 * systemd
 * [Runit](https://github.com/poise/poise-service-runit)
+* [Solaris](https://github.com/sh9189/poise-service-solaris)
+* [AIX](https://github.com/johnbellone/poise-service-aix)
 * *Supervisor (coming soon!)*
 
 
