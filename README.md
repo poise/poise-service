@@ -170,8 +170,8 @@ end
 ```
 
 Unlike resource attributes, service options can be different for each provider.
-Not all providers support the same options so make sure to the check the
-documentation for each provider to see what options the use.
+Not all providers support the same options so make sure to check the
+documentation for each provider to see what options are available.
 
 ### `poise_service_options`
 
