@@ -238,8 +238,7 @@ end
 
 By default a PID file will be created in `/var/run/service_name.pid`. You can
 use the `pid_file` option detailed below to override this and rely on your
-process creating a PID file in the given path. This is highly recommended on
-RHEL-family platforms as automatic PID detection there is more finicky.
+process creating a PID file in the given path.
 
 #### Options
 
