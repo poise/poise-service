@@ -36,9 +36,9 @@ module PoiseService
         super.tap do |r|
           r.provider(case node['platform_family']
           when 'debian'
-            Chef::Provider::Service::Init::Debian
+            Chef::Provider::Service::Debian
           when 'rhel'
-            Chef::Provider::Service::Init::Redhat
+            Chef::Provider::Service::Redhat
           else
             # This will explode later in the template, but better than nothing for later.
             Chef::Provider::Service::Init
