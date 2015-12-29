@@ -28,10 +28,10 @@ describe PoiseService::ServiceProviders::Sysvinit do
   context 'on Ubuntu' do
     let(:chefspec_options) { { platform: 'ubuntu', version: '14.04'} }
 
-    it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
-  start-stop-daemon --start --quiet --background \
-      --pidfile "/var/run/test.pid" --make-pidfile \
-      --chuid "root" --chdir "/" \
+    it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+  start-stop-daemon --start --quiet --background \\
+      --pidfile "/var/run/test.pid" --make-pidfile \\
+      --chuid "root" --chdir "/" \\
       --exec "myapp" -- --serve
 EOH
 
@@ -41,10 +41,10 @@ EOH
         override_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
       end
 
-      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-'EOH') }
-  start-stop-daemon --start --quiet --background \
-      --pidfile "/tmp/pid" \
-      --chuid "root" --chdir "/" \
+      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+  start-stop-daemon --start --quiet --background \\
+      --pidfile "/tmp/pid" \\
+      --chuid "root" --chdir "/" \\
       --exec "myapp" -- --serve
 EOH
     end # /context with an external PID file
@@ -56,7 +56,12 @@ EOH
     it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
   Dir.chdir("/")
   IO.write(pid_file, Process.pid)
-  Process::UID.change_privilege("root")
+  ent = Etc.getpwnam("root")
+  if Process.euid != ent.uid || Process.egid != ent.gid
+    Process.initgroups(ent.name, ent.gid)
+    Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+    Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+  end
   Kernel.exec(*["myapp", "--serve"])
 EOH
 
@@ -68,7 +73,12 @@ EOH
 
       it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
   Dir.chdir("/")
-  Process::UID.change_privilege("root")
+  ent = Etc.getpwnam("root")
+  if Process.euid != ent.uid || Process.egid != ent.gid
+    Process.initgroups(ent.name, ent.gid)
+    Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+    Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+  end
   Kernel.exec(*["myapp", "--serve"])
 EOH
     end # /context with an external PID file
