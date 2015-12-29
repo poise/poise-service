@@ -322,7 +322,8 @@ end
 ### `inittab`
 
 The `inittab` provider supports managing services via `/etc/inittab` using
-[SystemV Init](http://www.nongnu.org/sysvinit/).
+[SystemV Init](http://www.nongnu.org/sysvinit/). This can provide basic
+process supervision even on very old *nix machines.
 
 ```ruby
 poise_service 'myapp' do
