@@ -319,6 +319,30 @@ end
 * `never_reload` – Never try to reload the service.
 * `auto_reload` – Run `systemctl daemon-reload` after changes to the unit file. *(default: true)*
 
+### `inittab`
+
+The `inittab` provider supports managing services via `/etc/inittab` using
+[SystemV Init](http://www.nongnu.org/sysvinit/).
+
+```ruby
+poise_service 'myapp' do
+  provider :inittab
+  command 'myapp --serve'
+end
+```
+
+**NOTE:** Inittab does not allow stopping services, and they are started as soon
+as they are enabled.
+
+#### Options
+
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+* `pid_file` – Path to PID file that the service command will create.
+* `service_id` – Unique 1-4 character tag for the service. Defaults to an
+  auto-generated hash based on the service name. If these collide, bad things
+  happen. Don't do that.
+
 ## ServiceMixin
 
 For the common case of a resource (LWRP or plain Ruby) that roughly maps to
