@@ -24,6 +24,7 @@ end
 if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
   file '/no_sysvinit'
   file '/no_upstart'
+  file '/no_inittab'
 
   poise_service_test 'systemd' do
     service_provider :systemd
@@ -39,7 +40,14 @@ else
 
   if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('5')
     file '/no_upstart'
+
+    poise_service_test 'inittab' do
+      service_provider :inittab
+      base_port 10000
+    end
   else
+    file '/no_inittab'
+
     poise_service_test 'upstart' do
       service_provider :upstart
       base_port 7000

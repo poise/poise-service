@@ -49,12 +49,14 @@ module PoiseService
       end
 
       def action_restart
+        return if options['never_restart']
         # Just kill it and let init restart it.
-        Process.kill(new_resource.stop_signal, pid)
+        Process.kill(new_resource.stop_signal, pid) if pid
       end
 
       def action_reload
-        Process.kill(new_resource.reload_signal, pid)
+        return if options['never_reload']
+        Process.kill(new_resource.reload_signal, pid) if pid
       end
 
       private
@@ -84,12 +86,12 @@ module PoiseService
         # Add to inittab.
         edit_inittab do |content|
           inittab_line = "#{service_id}:2345:respawn:/sbin/poise_service_#{new_resource.service_name}"
-          if content =~ /^# #{Regexp.escape(new_resource.to_s)}$/
+          if content =~ /^# #{Regexp.escape(service_tag)}$/
             # Existing line, update in place.
-            content.gsub!(/^(# #{Regexp.escape(new_resource.to_s)}\n)(.*)$/, "\\1#{inittab_line}")
+            content.gsub!(/^(# #{Regexp.escape(service_tag)}\n)(.*)$/, "\\1#{inittab_line}")
           else
             # Add to the end.
-            content << "# #{new_resource}\n#{inittab_line}\n"
+            content << "# #{service_tag}\n#{inittab_line}\n"
           end
         end
       end
@@ -97,7 +99,7 @@ module PoiseService
       def destroy_service
         # Remove from inittab.
         edit_inittab do |content|
-          content.gsub!(/^# #{Regexp.escape(new_resource.to_s)}\n.*?\n$/, '')
+          content.gsub!(/^# #{Regexp.escape(service_tag)}\n.*?\n$/, '')
         end
 
         file "/sbin/poise_service_#{new_resource.service_name}" do
@@ -120,6 +122,11 @@ module PoiseService
             sum
           end
         end
+      end
+
+      # Tag to put in a comment in inittab for tracking.
+      def service_tag
+        "poise_service(#{new_resource.service_name})"
       end
 
       def pid_file
