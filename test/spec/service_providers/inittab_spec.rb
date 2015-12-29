@@ -32,14 +32,27 @@ describe PoiseService::ServiceProviders::Inittab do
       end
     end
 
-    it { is_expected.to render_file('/sbin/poise_service_test').with_content(<<-EOH) }
+    it { is_expected.to render_file('/sbin/poise_service_test').with_content(<<-EOS) }
 #!/bin/sh
-exec /opt/chef/embedded/bin/ruby -e 'IO.write("/var/run/test.pid", Process.pid); Dir.chdir("/"); Process::UID.change_privilege("root"); ENV["HOME"] = Dir.home("root") rescue nil; ; exec(*["myapp", "--serve"])'
+exec /opt/chef/embedded/bin/ruby <<EOH
+require 'etc'
+IO.write("/var/run/test.pid", Process.pid)
+Dir.chdir("/")
+ent = Etc.getpwnam("root")
+if Process.euid != ent.uid || Process.egid != ent.gid
+  Process.initgroups(ent.name, ent.gid)
+  Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+  Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+end
+(ENV["HOME"] = Dir.home("root")) rescue nil
+
+exec(*["myapp", "--serve"])
 EOH
+EOS
 
     context 'with an empty inittab' do
       it { is_expected.to render_file('/etc/inittab').with_content(eq(<<-EOH)) }
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test
 EOH
     end # /context with an empty inittab
@@ -71,7 +84,7 @@ co:2345:respawn:/sbin/agetty xvc0 9600 vt100-nav
 
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test
 EOH
     end # /context with a normal inittab
@@ -89,7 +102,7 @@ co:2345:respawn:/sbin/agetty xvc0 9600 vt100-nav
 
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test2
 EOH
 
@@ -105,7 +118,7 @@ co:2345:respawn:/sbin/agetty xvc0 9600 vt100-nav
 
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test
 EOH
     end # /context with an existing line
@@ -123,7 +136,7 @@ co:2345:respawn:/sbin/agetty xvc0 9600 vt100-nav
 
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test
 EOH
 
@@ -137,7 +150,7 @@ EOH
         end
       end
       it { is_expected.to render_file('/etc/inittab').with_content(eq(<<-EOH)) }
-# poise_service[#{'a'*1000}]
+# poise_service(#{'a'*1000})
 22ug:2345:respawn:/sbin/poise_service_#{'a'*1000}
 EOH
     end # /context with a long service_id
@@ -188,7 +201,7 @@ co:2345:respawn:/sbin/agetty xvc0 9600 vt100-nav
 
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
-# poise_service[test]
+# poise_service(test)
 pcg:2345:respawn:/sbin/poise_service_test2
 EOH
 
