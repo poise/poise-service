@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'etc'
 require 'shellwords'
 
 require 'poise_service/service_providers/base'
@@ -45,7 +46,8 @@ module PoiseService
         else
           # :nocov:
           Chef::Log.debug("[#{new_resource}] Forked")
-          # First child, daemonize and go to town.
+          # First child, daemonize and go to town. This handles multi-fork,
+          # setsid, and shutting down stdin/out/err.
           Process.daemon(true)
           Chef::Log.debug("[#{new_resource}] Daemonized")
           # Daemonized, set up process environment.
@@ -58,8 +60,13 @@ module PoiseService
           Chef::Log.debug("[#{new_resource}] Process environment configured")
           IO.write(pid_file, Process.pid)
           Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}")
-          Process::UID.change_privilege(new_resource.user)
-          Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user}")
+          ent = Etc.getpwnam(new_resource.user)
+          if Process.euid != ent.uid || Process.egid != ent.gid
+            Process.initgroups(ent.name, ent.gid)
+            Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+            Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+          end
+          Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user} (#{ent.uid}:#{ent.gid})")
           # Split the command so we don't get an extra sh -c.
           Chef::Log.debug("[#{new_resource}] Execing #{new_resource.command}")
           Kernel.exec(*Shellwords.split(new_resource.command))
