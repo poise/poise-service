@@ -72,7 +72,9 @@ server.mount_proc '/' do |req, res|
   res.body = {
     directory: Dir.getwd,
     user: Etc.getpwuid(Process.uid).name,
+    euser: Etc.getpwuid(Process.euid).name,
     group: Etc.getgrgid(Process.gid).name,
+    egroup: Etc.getgrgid(Process.egid).name,
     environment: ENV.to_hash,
     file_data: FILE_DATA,
     pid: Process.pid,
