@@ -43,3 +43,7 @@ end
 describe 'dummy provider' do
   it_should_behave_like 'a poise_service_test', 'dummy', 9000, false
 end
+
+describe 'inittab provider', unless: File.exist?('/no_inittab') do
+  it_should_behave_like 'a poise_service_test', 'inittab', 10000, false
+end
