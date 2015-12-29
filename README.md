@@ -253,6 +253,7 @@ process creating a PID file in the given path.
 * `user` – Override the service user.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
+* `script_path` – Override the path to the generated service script.
 
 ### `upstart`
 
