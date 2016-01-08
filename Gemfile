@@ -28,6 +28,3 @@ end
 dev_gem 'halite'
 dev_gem 'poise'
 dev_gem 'poise-boiler'
-
-# Pending https://github.com/acrmp/foodcritic/pull/312 in a release.
-gem 'foodcritic', github: 'acrmp/foodcritic'
