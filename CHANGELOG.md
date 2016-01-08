@@ -2,7 +2,7 @@
 
 ## v1.1.0
 
-* Added `inittab` provider.
+* Added `inittab` provider to manage services using old-fashioned `/etc/inittab`.
 
 ## v1.0.4
 
