@@ -308,6 +308,27 @@ poise_service 'myapp' do
   command 'myapp --serve'
 end
 ```
+```ruby
+systemd_config = {
+  Unit: {
+    Description: 'Daemon to detect crashing apps',
+    After: 'syslog.target',
+  },
+  Service: {
+    ExecStart: '/usr/sbin/abrtd',
+    Type: 'syslog.target',
+  },
+  Install: {
+    WantedBy: 'multi-user.target',
+  },
+}
+
+poise_service 'myapp' do
+  template 'poise-service:systemd.ini.erb'
+  provider :systemd
+  systemd_ini system_config
+end
+```
 
 #### Options
 
@@ -323,6 +344,7 @@ end
 * `never_reload` – Never try to reload the service.
 * `auto_reload` – Run `systemctl daemon-reload` after changes to the unit file. *(default: true)*
 * `restart_mode` – Restart mode for the generated service unit. *(default: on-failure)*
+* `systemd_ini` - Generates your own _ini_ systemd configuration file (The template has to be 'poise-service:systemd.ini.erb')
 
 ### `inittab`
 
