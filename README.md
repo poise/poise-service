@@ -43,10 +43,12 @@ framework is used.
 
 ### What service management frameworks are supported?
 
-* SysV (aka /etc/init.d)
-* Upstart
-* systemd
+* [SysV (aka /etc/init.d)](#sysvinit)
+* [Upstart](#upstart)
+* [systemd](#systemd)
+* [Inittab](#inittab)
 * [Runit](https://github.com/poise/poise-service-runit)
+* [Monit](https://github.com/poise/poise-monit#service-provider)
 * [Solaris](https://github.com/sh9189/poise-service-solaris)
 * [AIX](https://github.com/johnbellone/poise-service-aix)
 * *Supervisor (coming soon!)*
