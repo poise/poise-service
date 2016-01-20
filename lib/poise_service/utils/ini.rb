@@ -14,14 +14,13 @@
 # limitations under the License.
 #
 
-
 module PoiseService
   module Utils
     # Helpers for working with INI files.
     #
     # @since 1.0.0
     module Ini
-      extend self
+      module_function
 
       # Format a Hash as an INI file.
       #
@@ -46,14 +45,13 @@ module PoiseService
       # @return [String]
       def escape_ini_value(value)
         value = value.to_s.dup
-        value.gsub!(%r/\\([0nrt])/, '\\\\\1')
-        value.gsub!(%r/\n/, '\n')
-        value.gsub!(%r/\r/, '\r')
-        value.gsub!(%r/\t/, '\t')
-        value.gsub!(%r/\0/, '\0')
+        value.gsub!(/\\([0nrt])/, '\\\\\1')
+        value.gsub!(/\n/, '\n')
+        value.gsub!(/\r/, '\r')
+        value.gsub!(/\t/, '\t')
+        value.gsub!(/\0/, '\0')
         value
       end
-
     end
   end
 end
