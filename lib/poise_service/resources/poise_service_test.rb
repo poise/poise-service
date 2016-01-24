@@ -47,7 +47,7 @@ module PoiseService
         # @!attribute service_options
         #   Service options to set for the test group.
         #   @return [Hash, nil]
-        attribute(:service_options, kind_of: [Hash, nil])
+        attribute(:service_options, kind_of: [Hash, NilClass])
         # @!attribute base_port
         #   Port number to start from for the test group.
         #   @return [Integer]
