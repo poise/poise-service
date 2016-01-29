@@ -1,15 +1,10 @@
 sudo: false
 cache: bundler
 language: ruby
-addons:
-  apt:
-    packages:
-    - libgecode-dev
 rvm:
-- 2.1.4
+- '2.2'
 env:
   global:
-  - USE_SYSTEM_GECODE=true
   - KITCHEN_LOCAL_YAML=.kitchen.travis.yml
   - RACKSPACE_USERNAME=coderanger
   - secure: XpFA4AwBW5v4o3IuwKVSCTeVr6jXsW13T6ShGPpru4q+W2Zpcwh1qyBbxkkIWlkNjbhAT7G0HzQOqYcvUssYLEUYUNSlN10hxjpTZxvVj5sGjjhS3iTXbSop0NXzQthNRHfVZeK9ZWc+zP1MHGImjGCkErkin1+vu/SwMfIl2/8=

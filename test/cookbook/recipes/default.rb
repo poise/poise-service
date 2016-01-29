@@ -59,3 +59,5 @@ poise_service_test 'dummy' do
   service_provider :dummy
   base_port 9000
 end
+
+include_recipe 'poise_service_test::mixin'

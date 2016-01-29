@@ -1,9 +1,3 @@
 ---
 #<% require 'poise_boiler' %>
 <%= PoiseBoiler.kitchen(platforms: %w{linux centos-5}) %>
-
-suites:
-- name: default
-  run_list:
-  - recipe[poise-service_test]
-  - recipe[poise-service_test::mixin]
