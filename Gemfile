@@ -16,12 +16,14 @@
 
 source 'https://rubygems.org/'
 
-gemspec path: File.expand_path('..', __FILE__)
+gemspec path: File.expand_path('..', __FILE__, github: nil)
 
 def dev_gem(name, path: File.join('..', name))
   path = File.expand_path(File.join('..', path), __FILE__)
   if File.exist?(path)
     gem name, path: path
+  elsif github
+    gem name, github: github
   end
 end
 
