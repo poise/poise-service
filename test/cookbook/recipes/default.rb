@@ -60,4 +60,4 @@ poise_service_test 'dummy' do
   base_port 9000
 end
 
-include_recipe 'poise_service_test::mixin'
+include_recipe 'poise-service_test::mixin'
