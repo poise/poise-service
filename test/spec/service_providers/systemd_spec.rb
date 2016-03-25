@@ -36,6 +36,7 @@ ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=TERM
 User=root
 WorkingDirectory=/
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
