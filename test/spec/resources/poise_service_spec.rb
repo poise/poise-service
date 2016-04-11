@@ -152,6 +152,7 @@ describe PoiseService::Resources::PoiseService::Resource do
 
       context 'on Windows' do
         let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
+        before { allow(Poise::Utils::Win32).to receive(:admin_user).and_return('Administrator') }
         it { is_expected.to eq 'C:\\' }
       end # /context on Windows
     end # /context with root
