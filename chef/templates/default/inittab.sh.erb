@@ -10,6 +10,6 @@ if Process.euid != ent.uid || Process.egid != ent.gid
   Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
 end
 (ENV["HOME"] = Dir.home("<%= @user %>")) rescue nil
-<%= @environment.map {|key, value| "ENV[\"#{key}\"] = \"#{value}\"" }.join("; ") %>
+<%= @environment.map {|key, value| "ENV[#{key.inspect}] = #{value.inspect}" }.join("; ") %>
 exec(*<%= Shellwords.split(@command).inspect %>)
 EOH
