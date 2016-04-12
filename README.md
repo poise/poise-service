@@ -245,6 +245,8 @@ process creating a PID file in the given path.
 #### Options
 
 * `pid_file` – Path to PID file that the service command will create.
+* `pid_file_external` – If true, assume the service will create the PID file
+  itself. *(default: true if `pid_file` option is set)*
 * `template` – Override the default script template. If you want to use a
   template in a different cookbook use `'cookbook:template'`.
 * `command` – Override the service command.

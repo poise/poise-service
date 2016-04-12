@@ -48,6 +48,22 @@ EOH
       --exec "myapp" -- --serve
 EOH
     end # /context with an external PID file
+
+
+    context 'with a non-default internal PID file' do
+      before do
+        override_attributes['poise-service']['test'] ||= {}
+        override_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+        override_attributes['poise-service']['test']['pid_file_external'] = false
+      end
+
+      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+  start-stop-daemon --start --quiet --background \\
+      --pidfile "/tmp/pid" --make-pidfile \\
+      --chuid "root" --chdir "/" \\
+      --exec "myapp" -- --serve
+EOH
+    end # /context with a non-default internal PID file
   end # /context on Ubuntu
 
   context 'on CentOS' do
@@ -82,6 +98,32 @@ EOH
   Kernel.exec(*["myapp", "--serve"])
 EOH
     end # /context with an external PID file
+
+    context 'with a non-default internal PID file' do
+      before do
+        override_attributes['poise-service']['test'] ||= {}
+        override_attributes['poise-service']['test']['pid_file'] = '/tmp/pid'
+        override_attributes['poise-service']['test']['pid_file_external'] = false
+      end
+
+      it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
+pid_file = "/tmp/pid"
+File.unlink(pid_file) if File.exist?(pid_file)
+if Process.fork
+  sleep(1) until File.exist?(pid_file)
+else
+  Process.daemon(true)
+  Dir.chdir("/")
+  IO.write(pid_file, Process.pid)
+  ent = Etc.getpwnam("root")
+  if Process.euid != ent.uid || Process.egid != ent.gid
+    Process.initgroups(ent.name, ent.gid)
+    Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+    Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+  end
+  Kernel.exec(*["myapp", "--serve"])
+EOH
+    end # /context with a non-default internal PID file
   end # /context on CentOS
 
   context 'with action :disable' do

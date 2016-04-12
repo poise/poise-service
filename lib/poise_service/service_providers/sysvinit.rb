@@ -69,7 +69,7 @@ module PoiseService
             daemon: daemon,
             daemon_options: parts[1].to_s,
             pid_file: pid_file_,
-            pid_file_external: !!options['pid_file'],
+            pid_file_external: options['pid_file_external'].nil? ? !!options['pid_file'] : options['pid_file_external'],
             platform_family: node['platform_family'],
           )
         end
