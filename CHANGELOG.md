@@ -1,5 +1,11 @@
 # Poise-Service Changelog
 
+## v1.3.0
+
+* Allow setting `pid_file_external false` as a provider option for the `sysvinit`
+  provider to have non-standard path but keep the internal handling.
+* Improved quoting for environment variables in the `inittab` provider.
+
 ## v1.2.1
 
 * [#23](https://github.com/poise/poise-service/pull/23) Fix service templates on AIX and FreeBSD to use the correct root group.
