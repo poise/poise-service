@@ -161,6 +161,8 @@ describe PoiseService::Resources::PoiseService::Resource do
       let(:user) { 'poise' }
       before do
         expect(Dir).to receive(:home).with('poise').and_return('/home/poise')
+        allow(File).to receive(:directory?).and_call_original
+        allow(File).to receive(:directory?).with('/home/poise').and_return(true)
       end
 
       it { is_expected.to eq '/home/poise' }
@@ -174,6 +176,26 @@ describe PoiseService::Resources::PoiseService::Resource do
 
       it { is_expected.to eq '/' }
     end # /context with an invalid user
+
+    context 'with a non-existent directory' do
+      let(:user) { 'poise' }
+      before do
+        expect(Dir).to receive(:home).with('poise').and_return('/home/poise')
+        allow(File).to receive(:directory?).and_call_original
+        allow(File).to receive(:directory?).with('/home/poise').and_return(false)
+      end
+
+      it { is_expected.to eq '/' }
+    end # /context with a non-existent directory
+
+    context 'with a blank directory' do
+      let(:user) { 'poise' }
+      before do
+        expect(Dir).to receive(:home).with('poise').and_return('')
+      end
+
+      it { is_expected.to eq '/' }
+    end # /context with a blank directory
   end # /describe #default_directory
 
   describe '#restart_on_update' do

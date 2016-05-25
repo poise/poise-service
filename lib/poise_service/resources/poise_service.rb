@@ -118,23 +118,26 @@ module PoiseService
         # @see #directory
         # @return [String]
         def default_directory
-          # For root we always want the system root path.
-          unless user == 'root'
-            # Force a reload in case any users were created earlier in the run.
-            Etc.endpwent
-            home = begin
-              Dir.home(user)
-            rescue ArgumentError
-              nil
-            end
-          end
-          # Better than nothing
-          home || case node['platform_family']
+          # Default fallback.
+          sysroot = case node['platform_family']
           when 'windows'
             ENV.fetch('SystemRoot', 'C:\\')
           else
             '/'
           end
+          # For root we always want the system root path.
+          return sysroot if user == 'root'
+          # Force a reload in case any users were created earlier in the run.
+          Etc.endpwent
+          # ArgumentError means we can't find the user, possibly nsswitch caching?
+          home = begin
+            Dir.home(user)
+          rescue ArgumentError
+            sysroot
+          end
+          # If the home doesn't exist or is empty, use sysroot.
+          home = sysroot if home.empty? || !::File.directory?(home)
+          home
         end
 
         # Clean up a signal string/integer. Ints are mapped to the signal name,
