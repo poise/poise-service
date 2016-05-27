@@ -164,7 +164,7 @@ module PoiseService
             end
           else
             source default_source
-            cookbook 'poise-service'
+            cookbook self.poise_defined_in_cookbook
           end
           variables(
             command: options['command'] || new_resource.command,
