@@ -59,6 +59,11 @@ module PoiseService
         #   allocated automatically.
         #   @return [Integer]
         attribute(:gid, kind_of: Integer)
+        # @!attribute shell
+        #   Login shell for the user. Optional, if not set the shell
+        #   will be /bin/false.
+        #   @return [String]
+        attribute(:shell, kind_of: String, default: '/bin/false')
         # @!attribute home
         #   Home directory of the user. This directory will not be created if it
         #   does not exist. Optional.
@@ -113,7 +118,7 @@ module PoiseService
             comment "Service user for #{new_resource.name}"
             gid new_resource.group if new_resource.group
             home new_resource.home
-            shell '/bin/false'
+            shell new_resource.shell
             system true
             uid new_resource.uid
           end

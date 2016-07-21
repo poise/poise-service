@@ -34,8 +34,18 @@ describe PoiseService::Resources::PoiseServiceUser do
     end
 
     it { is_expected.to create_group('poise_group').with(gid: nil, system: true) }
-    it { is_expected.to create_user('poise_user').with(gid: 'poise_group', home: nil, system: true, uid: nil) }
+    it { is_expected.to create_user('poise_user').with(gid: 'poise_group', home: nil, system: true, uid: nil, shell: '/bin/false') }
   end # /context with an explicit user and group name
+
+  context 'with explicit shell' do
+    recipe do
+      poise_service_user 'poise' do
+        shell '/bin/bash'
+      end
+    end
+
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil, shell: '/bin/bash') }
+  end
 
   context 'with no group' do
     recipe do
@@ -45,7 +55,7 @@ describe PoiseService::Resources::PoiseServiceUser do
     end
 
     it { is_expected.to_not create_group('poise') }
-    it { is_expected.to create_user('poise').with(gid: nil, home: nil, system: true, uid: nil) }
+    it { is_expected.to create_user('poise').with(gid: nil, home: nil, system: true, uid: nil, shell: '/bin/false') }
   end # /context with no group
 
   context 'with explicit uid' do
@@ -56,7 +66,7 @@ describe PoiseService::Resources::PoiseServiceUser do
     end
 
     it { is_expected.to create_group('poise').with(gid: nil, system: true) }
-    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: 100) }
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: 100, shell: '/bin/false') }
   end # /context with explicit uid
 
   context 'with explicit gid' do
@@ -67,7 +77,7 @@ describe PoiseService::Resources::PoiseServiceUser do
     end
 
     it { is_expected.to create_group('poise').with(gid: 100, system: true) }
-    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil) }
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil, shell: '/bin/false') }
   end # /context with explicit gid
 
   context 'with home directory' do
@@ -78,7 +88,7 @@ describe PoiseService::Resources::PoiseServiceUser do
     end
 
     it { is_expected.to create_group('poise').with(gid: nil, system: true) }
-    it { is_expected.to create_user('poise').with(gid: 'poise', home: '/home/poise', system: true, uid: nil) }
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: '/home/poise', system: true, uid: nil, shell: '/bin/false') }
   end # /context with home directory
 
   context 'with action :remove' do
