@@ -21,7 +21,8 @@ poise_service_test 'default' do
   base_port 5000
 end
 
-if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7')
+if node['platform_family'] == 'rhel' && node['platform_version'].start_with?('7') || \
+   node['platform'] == 'ubuntu' && node['platform_version'].to_i >= 16
   file '/no_sysvinit'
   file '/no_upstart'
   file '/no_inittab'
