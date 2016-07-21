@@ -1,5 +1,10 @@
 # Poise-Service Changelog
 
+## v1.4.0
+
+* [#31](https://github.com/poise/poise-service/pull/31) Add `shell` property to
+  `poise_service_user` resource.
+
 ## v1.3.1
 
 * [#25](https://github.com/poise/poise-service/pull/25) Cope with a service user
