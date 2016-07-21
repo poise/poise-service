@@ -24,6 +24,10 @@ module PoiseService
     # (see PoiseServiceUser::Resource)
     # @since 1.0.0
     module PoiseServiceUser
+      # Shells to look for in order.
+      # @api private
+      DEFAULT_SHELLS = %w{/bin/nologin /usr/bin/nologin /bin/false}
+
       # A `poise_service_user` resource to create service users/groups.
       #
       # @since 1.0.0
@@ -60,15 +64,25 @@ module PoiseService
         #   @return [Integer]
         attribute(:gid, kind_of: Integer)
         # @!attribute shell
-        #   Login shell for the user. Optional, if not set the shell
-        #   will be /bin/false.
+        #   Login shell for the user. Optional, if not set the shell will be
+        #   determined automatically.
         #   @return [String]
-        attribute(:shell, kind_of: String, default: '/bin/false')
+        attribute(:shell, kind_of: String, default: lazy { default_shell })
         # @!attribute home
         #   Home directory of the user. This directory will not be created if it
         #   does not exist. Optional.
         #   @return [String]
         attribute(:home, kind_of: String)
+
+        private
+
+        # Find a default shell for service users. Tries to use nologin, but fall
+        # back on false.
+        #
+        # @return [String]
+        def default_shell
+          DEFAULT_SHELLS.find {|s| ::File.exist?(s) } || DEFAULT_SHELLS.last
+        end
       end
 
       # Provider for `poise_service_user`.

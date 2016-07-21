@@ -219,9 +219,10 @@ end
 
 * `user` – Name of the user. *(name attribute)*
 * `group` – Name of the group. Set to `false` to disable group creation. *(name attribute)*
-* `uid` – UID of the user. If unspecified it will be automatically allocated.
-* `gid` – GID of the group. If unspecified it will be automatically allocated.
+* `uid` – UID of the user. *(default: automatic)*
+* `gid` – GID of the group. *(default: automatic)*
 * `home` – Home directory of the user.
+* `shell` – Shell of the user. *(default: /bin/nologin if present or /bin/false)*
 
 ## Providers
 

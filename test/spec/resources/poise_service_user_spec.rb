@@ -18,12 +18,16 @@ require 'spec_helper'
 
 describe PoiseService::Resources::PoiseServiceUser do
   step_into(:poise_service_user)
+  let(:shells) { [] }
+  before do
+    allow(File).to receive(:exist?) {|s| shells.include?(s) }
+  end
   recipe do
     poise_service_user 'poise'
   end
 
   it { is_expected.to create_group('poise').with(gid: nil, system: true) }
-  it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil) }
+  it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil, shell: '/bin/false') }
 
   context 'with an explicit user and group name' do
     recipe do
@@ -36,16 +40,6 @@ describe PoiseService::Resources::PoiseServiceUser do
     it { is_expected.to create_group('poise_group').with(gid: nil, system: true) }
     it { is_expected.to create_user('poise_user').with(gid: 'poise_group', home: nil, system: true, uid: nil, shell: '/bin/false') }
   end # /context with an explicit user and group name
-
-  context 'with explicit shell' do
-    recipe do
-      poise_service_user 'poise' do
-        shell '/bin/bash'
-      end
-    end
-
-    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil, shell: '/bin/bash') }
-  end
 
   context 'with no group' do
     recipe do
@@ -90,6 +84,26 @@ describe PoiseService::Resources::PoiseServiceUser do
     it { is_expected.to create_group('poise').with(gid: nil, system: true) }
     it { is_expected.to create_user('poise').with(gid: 'poise', home: '/home/poise', system: true, uid: nil, shell: '/bin/false') }
   end # /context with home directory
+
+  context 'with shell' do
+    recipe do
+      poise_service_user 'poise' do
+        shell '/bin/bash'
+      end
+    end
+
+    it { is_expected.to create_group('poise').with(gid: nil, system: true) }
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: true, uid: nil, shell: '/bin/bash') }
+  end # /context with shell
+
+  context 'with /bin/nologin existing' do
+    let(:shells) { %w{/bin/nologin} }
+    recipe do
+      poise_service_user 'poise'
+    end
+
+    it { is_expected.to create_user('poise').with(shell: '/bin/nologin') }
+  end # /context with /bin/nologin existing
 
   context 'with action :remove' do
     recipe do
