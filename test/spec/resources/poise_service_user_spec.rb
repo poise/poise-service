@@ -18,6 +18,9 @@ require 'spec_helper'
 
 describe PoiseService::Resources::PoiseServiceUser do
   step_into(:poise_service_user)
+  # We need a platform because Chef no longer maps the user resource for chefspec.
+  # https://github.com/chef/chef/issues/5242
+  let(:chefspec_options) { {platform: 'ubuntu', version: '14.04'} }
   let(:shells) { [] }
   before do
     allow(File).to receive(:exist?) {|s| shells.include?(s) }
