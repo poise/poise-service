@@ -157,4 +157,5 @@ describe PoiseService::Resources::PoiseServiceUser do
     it { is_expected.to_not create_group('poise') }
     it { is_expected.to create_user('poise').with(gid: nil, home: nil, system: true, uid: nil, shell: '/bin/false') }
   end # /context on Windows
+
 end

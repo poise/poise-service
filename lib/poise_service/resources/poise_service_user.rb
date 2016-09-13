@@ -80,6 +80,7 @@ module PoiseService
         # Find a default shell for service users. Tries to use nologin, but fall
         # back on false.
         #
+        # @api private
         # @return [String]
         def default_shell
           DEFAULT_SHELLS.find {|s| ::File.exist?(s) } || DEFAULT_SHELLS.last
@@ -133,6 +134,9 @@ module PoiseService
         private
 
         # Create the system group.
+        #
+        # @api private
+        # @return [void]
         def create_group
           group new_resource.group do
             gid new_resource.gid
@@ -142,6 +146,9 @@ module PoiseService
         end
 
         # Create the system user.
+        #
+        # @api private
+        # @return [void]
         def create_user
           user new_resource.user do
             comment "Service user for #{new_resource.name}"
@@ -155,6 +162,9 @@ module PoiseService
         end
 
         # Remove the system group.
+        #
+        # @api private
+        # @return [void]
         def remove_group
           create_group.tap do |r|
             r.action(:remove)
@@ -162,6 +172,9 @@ module PoiseService
         end
 
         # Remove the system user.
+        #
+        # @api private
+        # @return [void]
         def remove_user
           create_user.tap do |r|
             r.action(:remove)
