@@ -122,7 +122,8 @@ module PoiseService
         def create_group
           group new_resource.group do
             gid new_resource.gid
-            system true
+            # Solaris doesn't support the idea of system groups.
+            system true unless node.platform_family?('solaris2')
           end
         end
 
@@ -133,7 +134,8 @@ module PoiseService
             gid new_resource.group if new_resource.group
             home new_resource.home
             shell new_resource.shell
-            system true
+            # Solaris doesn't support the idea of system users.
+            system true unless node.platform_family?('solaris2')
             uid new_resource.uid
           end
         end

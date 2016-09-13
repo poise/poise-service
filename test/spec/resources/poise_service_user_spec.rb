@@ -143,4 +143,11 @@ describe PoiseService::Resources::PoiseServiceUser do
       it { is_expected.to remove_user('poise') }
     end # /context with no group
   end # context with action :remove
+
+  context 'on Solaris' do
+    let(:chefspec_options) { {platform: 'solaris2', version: '5.11'} }
+
+    it { is_expected.to create_group('poise').with(gid: nil, system: nil) }
+    it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: false, uid: nil, shell: '/bin/false') }
+  end # /context on Solaris
 end
