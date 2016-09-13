@@ -49,10 +49,11 @@ module PoiseService
         #   @return [String]
         attribute(:user, kind_of: String, name_attribute: true)
         # @!attribute group
-        #   Name of the group to create. Defaults to the name of the resource.
-        #   Set to false to disable group creation.
+        #   Name of the group to create. Defaults to the name of the user,
+        #   except on Windows where it defaults to false. Set to false to
+        #   disable group creation.
         #   @return [String, false]
-        attribute(:group, kind_of: [String, FalseClass], name_attribute: true)
+        attribute(:group, kind_of: [String, FalseClass], default: lazy { default_group })
         # @!attribute uid
         #   UID of the user to create. Optional, if not set the UID will be
         #   allocated automatically.
@@ -82,6 +83,19 @@ module PoiseService
         # @return [String]
         def default_shell
           DEFAULT_SHELLS.find {|s| ::File.exist?(s) } || DEFAULT_SHELLS.last
+        end
+
+        # Find the default group name. Returns false on Windows because service
+        # groups aren't needed there. Otherwise use the name of the service user.
+        #
+        # @api private
+        # @return [String, false]
+        def default_group
+          if node.platform_family?('windows')
+            false
+          else
+            user
+          end
         end
       end
 

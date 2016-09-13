@@ -150,4 +150,11 @@ describe PoiseService::Resources::PoiseServiceUser do
     it { is_expected.to create_group('poise').with(gid: nil, system: nil) }
     it { is_expected.to create_user('poise').with(gid: 'poise', home: nil, system: false, uid: nil, shell: '/bin/false') }
   end # /context on Solaris
+
+  context 'on Windows' do
+    let(:chefspec_options) { {platform: 'windows', version: '2012R2'} }
+
+    it { is_expected.to_not create_group('poise') }
+    it { is_expected.to create_user('poise').with(gid: nil, home: nil, system: true, uid: nil, shell: '/bin/false') }
+  end # /context on Windows
 end
