@@ -1,5 +1,9 @@
 # Poise-Service Changelog
 
+## v1.4.1
+
+* Fix `poise_service_user` on Solaris and make it closer to being usable on Windows.
+
 ## v1.4.0
 
 * [#31](https://github.com/poise/poise-service/pull/31) Add `shell` property to
