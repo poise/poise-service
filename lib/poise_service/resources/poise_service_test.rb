@@ -126,7 +126,6 @@ EOH
             content <<-EOH
 #!/opt/chef/embedded/bin/ruby
 trap('HUP', 'IGNORE')
-trap('STOP', 'IGNORE')
 trap('TERM', 'IGNORE')
 #{SERVICE_SCRIPT}
 while true
