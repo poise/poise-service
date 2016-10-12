@@ -1,5 +1,9 @@
 # Poise-Service Changelog
 
+## v1.4.2
+
+* Fix the `noterm` test service to work on Ruby 2.3.
+
 ## v1.4.1
 
 * Fix `poise_service_user` on Solaris and make it closer to being usable on Windows.
