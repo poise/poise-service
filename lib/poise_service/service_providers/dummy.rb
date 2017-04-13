@@ -25,6 +25,14 @@ module PoiseService
     class Dummy < Base
       provides(:dummy)
 
+      # @api private
+      def self.default_inversion_options(node, resource)
+        super.merge({
+          # Time to wait between stop and start.
+          restart_delay: 1,
+        })
+      end
+
       def action_start
         return if pid
         Chef::Log.debug("[#{new_resource}] Starting #{new_resource.command}")
@@ -59,18 +67,30 @@ module PoiseService
           end
           Chef::Log.debug("[#{new_resource}] Process environment configured")
           IO.write(pid_file, Process.pid)
-          Chef::Log.debug("[#{new_resource}] PID written to #{pid_file}")
+          Chef::Log.debug("[#{new_resource}] PID #{Process.pid} written to #{pid_file}")
           ent = Etc.getpwnam(new_resource.user)
           if Process.euid != ent.uid || Process.egid != ent.gid
             Process.initgroups(ent.name, ent.gid)
             Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
             Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+            Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user} (#{ent.uid}:#{ent.gid})")
           end
-          Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user} (#{ent.uid}:#{ent.gid})")
-          # Split the command so we don't get an extra sh -c.
+          # Log the command. Happens before ouput redirect or this ends up in the file.
           Chef::Log.debug("[#{new_resource}] Execing #{new_resource.command}")
+          # Set up output logging.
+          Chef::Log.debug("[#{new_resource}] Logging output to #{output_file}")
+          output = ::File.open(output_file, 'ab')
+          $stdout.reopen(output)
+          $stdout.sync = true
+          $stderr.reopen(output)
+          $stderr.sync = true
+          $stdout.write("#{Time.now} Starting #{new_resource.command}")
+          # Split the command so we don't get an extra sh -c.
           Kernel.exec(*Shellwords.split(new_resource.command))
           # Just in case, bail out.
+          $stdout.reopen(STDOUT)
+          $stderr.reopen(STDERR)
+          Chef::Log.debug("[#{new_resource}] Exec failed, bailing out.")
           exit!
           # :nocov:
         end
@@ -87,6 +107,8 @@ module PoiseService
       def action_restart
         return if options['never_restart']
         action_stop
+        # Give things a moment to stop before we try starting again.
+        sleep(options['restart_delay'])
         action_start
       end
 
@@ -149,6 +171,11 @@ module PoiseService
       # Path to the PID file.
       def pid_file
         "/var/run/#{new_resource.service_name}.pid"
+      end
+
+      # Path to the output file.
+      def output_file
+        "/var/run/#{new_resource.service_name}.out"
       end
 
     end
