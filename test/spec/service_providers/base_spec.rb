@@ -185,7 +185,7 @@ describe PoiseService::ServiceProviders::Base do
         end
       end
 
-      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy', 'restart_delay' => 1}) }
     end # /context with an options resource
 
     context 'with an options resource using service_name' do
@@ -199,7 +199,7 @@ describe PoiseService::ServiceProviders::Base do
         end
       end
 
-      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy', 'restart_delay' => 1}) }
     end # /context with an options resource using service_name
 
     context 'with node attributes' do
@@ -212,7 +212,7 @@ describe PoiseService::ServiceProviders::Base do
         end
       end
 
-      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy', 'restart_delay' => 1}) }
     end # /context with node attributes
 
     context 'with node attributes using service_name' do
@@ -225,7 +225,7 @@ describe PoiseService::ServiceProviders::Base do
         end
       end
 
-      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy'}) }
+      it { is_expected.to eq({'command' => 'myapp', 'provider' => 'dummy', 'restart_delay' => 1}) }
     end # /context with node attributes using service_name
   end # /describe #options
 end
