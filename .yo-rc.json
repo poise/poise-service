@@ -2,6 +2,7 @@
   "generator-poise": {
     "created": true,
     "name": "poise-service",
-    "cookbookName": "auto"
+    "cookbookName": "auto",
+    "noMinor": true
   }
 }
