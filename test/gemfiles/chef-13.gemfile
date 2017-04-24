@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016, Noah Kantrowitz
+# Copyright 2017, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,4 @@
 
 eval_gemfile File.expand_path('../../../Gemfile', __FILE__)
 
-gem 'chef', git: 'https://github.com/chef/chef.git'
-gem 'chefspec', git: 'https://github.com/sethvargo/chefspec.git'
-gem 'fauxhai', git: 'https://github.com/customink/fauxhai.git'
-gem 'foodcritic', git: 'https://github.com/foodcritic/foodcritic.git'
-gem 'halite', git: 'https://github.com/poise/halite.git'
-gem 'ohai', git: 'https://github.com/chef/ohai.git'
-gem 'poise', git: 'https://github.com/poise/poise.git'
-gem 'poise-boiler', git: 'https://github.com/poise/poise-boiler.git'
-gem 'poise-profiler', git: 'https://github.com/poise/poise-profiler.git'
+gem 'chef', '~> 13.0'
