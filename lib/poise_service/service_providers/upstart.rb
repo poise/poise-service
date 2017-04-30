@@ -30,8 +30,6 @@ module PoiseService
       provides(:upstart)
 
       def self.provides_auto?(node, resource)
-        # Don't allow upstart under docker, it won't work.
-        return false if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
         service_resource_hints.include?(:upstart)
       end
 

@@ -27,8 +27,6 @@ module PoiseService
 
       # @api private
       def self.provides_auto?(node, resource)
-        # Don't allow systemd under docker, it won't work in most cases.
-        return false if node['virtualization'] && %w{docker lxc}.include?(node['virtualization']['system'])
         service_resource_hints.include?(:systemd)
       end
 
