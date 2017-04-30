@@ -33,6 +33,14 @@ module PoiseService
         service_resource_hints.include?(:upstart)
       end
 
+      # @api private
+      def self.default_inversion_options(node, resource)
+        super.merge({
+          # Time to wait between stop and start.
+          restart_delay: 1,
+        })
+      end
+
       # True restart in Upstart preserves the original config data, we want the
       # more obvious behavior like everything else in the world that restart
       # would re-read the updated config file. Use stop+start to get this
@@ -40,6 +48,8 @@ module PoiseService
       def action_restart
         return if options['never_restart']
         action_stop
+        # Give things a moment to stop before we try starting again.
+        sleep(options['restart_delay'])
         action_start
       end
 
