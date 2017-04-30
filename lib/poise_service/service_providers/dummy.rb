@@ -34,6 +34,7 @@ module PoiseService
       end
 
       def action_start
+        return if options['never_start']
         return if pid
         Chef::Log.debug("[#{new_resource}] Starting #{new_resource.command}")
         # Clear the pid file if it exists.
@@ -108,6 +109,7 @@ module PoiseService
       end
 
       def action_stop
+        return if options['never_stop']
         return unless pid
         Chef::Log.debug("[#{new_resource}] Stopping with #{new_resource.stop_signal}. Current PID is #{pid.inspect}.")
         Process.kill(new_resource.stop_signal, pid)
