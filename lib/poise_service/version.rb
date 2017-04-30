@@ -16,5 +16,5 @@
 
 
 module PoiseService
-  VERSION = '1.4.3.pre'
+  VERSION = '1.5.0'
 end
