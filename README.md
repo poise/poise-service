@@ -358,6 +358,32 @@ as they are enabled.
   auto-generated hash based on the service name. If these collide, bad things
   happen. Don't do that.
 
+### `dummy`
+
+The `dummy` provider supports launching services directly from Chef itself.
+This is for testing purposes only and is entirely unsuitable for use in
+production. This is mostly useful when used alongside kitchen-docker.
+
+```ruby
+poise_service 'myapp' do
+  provider :dummy
+  command 'myapp --serve'
+end
+```
+
+The service information is written to `/var/run`. The PID file is `service_name.pid`,
+the command output is `service_name.out`, and the service parameters are in
+`service_name.json`.
+
+#### Options
+
+* `never_start` – Never try to start the service.
+* `never_stop` – Never try to stop the service.
+* `never_restart` – Never try to restart the service.
+* `never_reload` – Never try to reload the service.
+* `restart_delay` – Number of seconds to wait between stop and start when
+  restarting. *(default: 1)*
+
 ## ServiceMixin
 
 For the common case of a resource (LWRP or plain Ruby) that roughly maps to
