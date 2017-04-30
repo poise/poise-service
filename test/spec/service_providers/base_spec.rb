@@ -57,6 +57,14 @@ describe PoiseService::ServiceProviders::Base do
       expect(service_resource).to receive(:run_action).with(:start).ordered
       subject.action_start
     end
+
+    context 'with never_start' do
+      before { options['never_start'] = true }
+      it do
+        expect(service_resource).to_not receive(:run_action).with(:start).ordered
+        subject.action_start
+      end
+    end # /context with never_start
   end # /describe #action_start
 
   describe '#action_stop' do
@@ -64,6 +72,14 @@ describe PoiseService::ServiceProviders::Base do
       expect(service_resource).to receive(:run_action).with(:stop).ordered
       subject.action_stop
     end
+
+    context 'with never_stop' do
+      before { options['never_stop'] = true }
+      it do
+        expect(service_resource).to_not receive(:run_action).with(:stop).ordered
+        subject.action_stop
+      end
+    end # /context with never_stop
   end # /describe #action_stop
 
   describe '#action_restart' do

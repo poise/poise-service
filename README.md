@@ -256,6 +256,8 @@ process creating a PID file in the given path.
 * `reload_signal` – Override the service reload signal.
 * `stop_signal` – Override the service stop signal.
 * `user` – Override the service user.
+* `never_start` – Never try to start the service.
+* `never_stop` – Never try to stop the service.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
 * `script_path` – Override the path to the generated service script.
@@ -294,6 +296,8 @@ default and will throw an error if a reload signal other than SIGHUP is used.
 * `reload_signal` – Override the service reload signal.
 * `stop_signal` – Override the service stop signal.
 * `user` – Override the service user.
+* `never_start` – Never try to start the service.
+* `never_stop` – Never try to stop the service.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
 
@@ -320,6 +324,8 @@ end
 * `reload_signal` – Override the service reload signal.
 * `stop_signal` – Override the service stop signal.
 * `user` – Override the service user.
+* `never_start` – Never try to start the service.
+* `never_stop` – Never try to stop the service.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
 * `auto_reload` – Run `systemctl daemon-reload` after changes to the unit file. *(default: true)*
@@ -343,6 +349,8 @@ as they are enabled.
 
 #### Options
 
+* `never_start` – Never try to start the service.
+* `never_stop` – Never try to stop the service.
 * `never_restart` – Never try to restart the service.
 * `never_reload` – Never try to reload the service.
 * `pid_file` – Path to PID file that the service command will create.

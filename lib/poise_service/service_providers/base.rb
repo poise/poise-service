@@ -70,12 +70,14 @@ module PoiseService
       end
 
       def action_start
+        return if options['never_start']
         notify_if_service do
           service_resource.run_action(:start)
         end
       end
 
       def action_stop
+        return if options['never_stop']
         notify_if_service do
           service_resource.run_action(:stop)
         end
