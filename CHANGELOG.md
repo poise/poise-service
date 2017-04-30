@@ -1,5 +1,14 @@
 # Poise-Service Changelog
 
+## v1.5.0
+
+* Added `never_start` and `never_stop` provider options to prevent Chef from starting
+  or stopping a service.
+* Automatically reload systemd when removing a service if auto_reload is enabled.
+* Improved dummy provider, records process output to `/var/run/service_name.out`
+  and a `restart_delay` provider option to the dummy provider to wait between
+  stopping and starting.
+
 ## v1.4.2
 
 * Fix the `noterm` test service to work on Ruby 2.3.
