@@ -53,45 +53,55 @@ module PoiseService
           end
         else
           # :nocov:
-          Chef::Log.debug("[#{new_resource}] Forked")
-          # First child, daemonize and go to town. This handles multi-fork,
-          # setsid, and shutting down stdin/out/err.
-          Process.daemon(true)
-          Chef::Log.debug("[#{new_resource}] Daemonized")
-          # Daemonized, set up process environment.
-          Dir.chdir(new_resource.directory)
-          Chef::Log.debug("[#{new_resource}] Directory changed to #{new_resource.directory}")
-          ENV['HOME'] = Dir.home(new_resource.user)
-          new_resource.environment.each do |key, val|
-            ENV[key.to_s] = val.to_s
+          begin
+            Chef::Log.debug("[#{new_resource}] Forked")
+            # First child, daemonize and go to town. This handles multi-fork,
+            # setsid, and shutting down stdin/out/err.
+            Process.daemon(true)
+            Chef::Log.debug("[#{new_resource}] Daemonized")
+            # Daemonized, set up process environment.
+            Dir.chdir(new_resource.directory)
+            Chef::Log.debug("[#{new_resource}] Directory changed to #{new_resource.directory}")
+            ENV['HOME'] = Dir.home(new_resource.user)
+            new_resource.environment.each do |key, val|
+              ENV[key.to_s] = val.to_s
+            end
+            Chef::Log.debug("[#{new_resource}] Process environment configured")
+            # Make sure to open the output file and write the pid file before we
+            # drop privs.
+            output = ::File.open(output_file, 'ab')
+            IO.write(pid_file, Process.pid)
+            Chef::Log.debug("[#{new_resource}] PID #{Process.pid} written to #{pid_file}")
+            ent = Etc.getpwnam(new_resource.user)
+            if Process.euid != ent.uid || Process.egid != ent.gid
+              Process.initgroups(ent.name, ent.gid)
+              Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
+              Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
+              Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user} (#{ent.uid}:#{ent.gid})")
+            end
+            # Log the command. Happens before ouput redirect or this ends up in the file.
+            Chef::Log.debug("[#{new_resource}] Execing #{new_resource.command}")
+            # Set up output logging.
+            Chef::Log.debug("[#{new_resource}] Logging output to #{output_file}")
+            $stdout.reopen(output)
+            $stdout.sync = true
+            $stderr.reopen(output)
+            $stderr.sync = true
+            $stdout.write("#{Time.now} Starting #{new_resource.command}")
+            # Split the command so we don't get an extra sh -c.
+            Kernel.exec(*Shellwords.split(new_resource.command))
+            # Just in case, bail out.
+            $stdout.reopen(STDOUT)
+            $stderr.reopen(STDERR)
+            Chef::Log.debug("[#{new_resource}] Exec failed, bailing out.")
+            exit!
+          rescue Exception => e
+            # Welp, we tried.
+            $stdout.reopen(STDOUT)
+            $stderr.reopen(STDERR)
+            Chef::Log.error("[#{new_resource}] Error during process spawn: #{e}")
+            exit!
           end
-          Chef::Log.debug("[#{new_resource}] Process environment configured")
-          IO.write(pid_file, Process.pid)
-          Chef::Log.debug("[#{new_resource}] PID #{Process.pid} written to #{pid_file}")
-          ent = Etc.getpwnam(new_resource.user)
-          if Process.euid != ent.uid || Process.egid != ent.gid
-            Process.initgroups(ent.name, ent.gid)
-            Process::GID.change_privilege(ent.gid) if Process.egid != ent.gid
-            Process::UID.change_privilege(ent.uid) if Process.euid != ent.uid
-            Chef::Log.debug("[#{new_resource}] Changed privs to #{new_resource.user} (#{ent.uid}:#{ent.gid})")
-          end
-          # Log the command. Happens before ouput redirect or this ends up in the file.
-          Chef::Log.debug("[#{new_resource}] Execing #{new_resource.command}")
-          # Set up output logging.
-          Chef::Log.debug("[#{new_resource}] Logging output to #{output_file}")
-          output = ::File.open(output_file, 'ab')
-          $stdout.reopen(output)
-          $stdout.sync = true
-          $stderr.reopen(output)
-          $stderr.sync = true
-          $stdout.write("#{Time.now} Starting #{new_resource.command}")
-          # Split the command so we don't get an extra sh -c.
-          Kernel.exec(*Shellwords.split(new_resource.command))
-          # Just in case, bail out.
-          $stdout.reopen(STDOUT)
-          $stderr.reopen(STDERR)
-          Chef::Log.debug("[#{new_resource}] Exec failed, bailing out.")
-          exit!
           # :nocov:
         end
         Chef::Log.debug("[#{new_resource}] Started.")
