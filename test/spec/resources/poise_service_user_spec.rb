@@ -23,7 +23,10 @@ describe PoiseService::Resources::PoiseServiceUser do
   let(:chefspec_options) { {platform: 'ubuntu', version: '14.04'} }
   let(:shells) { [] }
   before do
-    allow(File).to receive(:exist?) {|s| shells.include?(s) }
+    allow(File).to receive(:exist?).and_call_original
+    described_class::DEFAULT_SHELLS.each do |shell|
+      allow(File).to receive(:exist?).with(shell).and_return(shells.include?(shell))
+    end
   end
   recipe do
     poise_service_user 'poise'
