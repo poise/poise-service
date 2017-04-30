@@ -39,8 +39,6 @@ module PoiseService
           auto_reload: true,
           # Service restart mode.
           restart_mode: 'on-failure',
-          # Default unit data.
-          unit: nil,
         })
       end
 
@@ -72,7 +70,7 @@ module PoiseService
         reloader = systemctl_daemon_reload
         service_template("/etc/systemd/system/#{new_resource.service_name}.service", 'systemd.service.erb') do
           notifies :run, reloader, :immediately if options['auto_reload']
-          variables.update(auto_reload: options['auto_reload'], restart_mode: options['restart_mode'], unit: options['unit'] || default_unit)
+          variables.update(auto_reload: options['auto_reload'], restart_mode: options['restart_mode'])
         end
       end
 
@@ -82,30 +80,6 @@ module PoiseService
           action :delete
           notifies :run, reloader, :immediately if options['auto_reload']
         end
-      end
-
-      # Default unit INI data as a Ruby hash.
-      #
-      # @api private
-      # @return [Hash]
-      def default_unit
-        {
-          Unit: {
-            Description: new_resource.service_name,
-          },
-          Service: {
-            Environment: (options['environment'] || new_resource.environment).map {|key, val| %Q{"#{key}=#{val}"} }.join(' '),
-            ExecStart: options['command'] || new_resource.command,
-            ExecReload: "/bin/kill -#{options['reload_signal'] || new_resource.reload_signal} %> $MAINPID",
-            KillSignal: options['stop_signal'] || new_resource.stop_signal,
-            User: options['user'] || new_resource.user,
-            WorkingDirectory: options['directory'] || new_resource.directory,
-            Restart: options['restart_mode'],
-          },
-          Install: {
-            WantedBy: 'multi-user.target',
-          },
-        }
       end
 
     end
