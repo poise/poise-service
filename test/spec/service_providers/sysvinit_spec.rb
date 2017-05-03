@@ -19,6 +19,8 @@ require 'spec_helper'
 describe PoiseService::ServiceProviders::Sysvinit do
   service_provider('sysvinit')
   step_into(:poise_service)
+  let(:test_provider) { chef_run.poise_service('test').provider_for_action(:enable) }
+  let(:service_provider) { test_provider.send(:service_resource).provider_for_action(:enable) }
   recipe do
     poise_service 'test' do
       command 'myapp --serve'
@@ -28,6 +30,7 @@ describe PoiseService::ServiceProviders::Sysvinit do
   context 'on Ubuntu' do
     let(:chefspec_options) { { platform: 'ubuntu', version: '14.04'} }
 
+    it { expect(service_provider).to be_a Chef::Provider::Service::Debian }
     it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
   start-stop-daemon --start --quiet --background \\
       --pidfile "/var/run/test.pid" --make-pidfile \\
@@ -69,6 +72,7 @@ EOH
   context 'on CentOS' do
     let(:chefspec_options) { { platform: 'centos', version: '7.0'} }
 
+    it { expect(service_provider).to be_a Chef::Provider::Service::Redhat }
     it { is_expected.to render_file('/etc/init.d/test').with_content(<<-EOH) }
   Dir.chdir("/")
   IO.write(pid_file, Process.pid)
@@ -125,6 +129,16 @@ else
 EOH
     end # /context with a non-default internal PID file
   end # /context on CentOS
+
+  context 'on Debian' do
+    let(:chefspec_options) { { platform: 'debian', version: '8.7'} }
+    it { expect(service_provider).to be_a Chef::Provider::Service::Debian }
+  end # /context on Debian
+
+  context 'on Amazon Linux' do
+    let(:chefspec_options) { { platform: 'amazon', version: '2016.09'} }
+    it { expect(service_provider).to be_a Chef::Provider::Service::Redhat }
+  end # /context on Amazon Linux
 
   context 'with action :disable' do
     recipe do
