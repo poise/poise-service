@@ -37,7 +37,7 @@ module PoiseService
           r.provider(case node['platform_family']
           when 'debian'
             Chef::Provider::Service::Debian
-          when 'rhel'
+          when 'rhel', 'amazon'
             Chef::Provider::Service::Redhat
           else
             # Better than nothing I guess? Will fail on enable I think.
