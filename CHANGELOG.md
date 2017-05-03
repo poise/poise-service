@@ -1,5 +1,9 @@
 # Poise-Service Changelog
 
+## v1.5.1
+
+* Fix the `sysvinit` provider on Amazon Linux under Chef 13.
+
 ## v1.5.0
 
 * Added `never_start` and `never_stop` provider options to prevent Chef from starting
