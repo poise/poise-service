@@ -167,6 +167,7 @@ module PoiseService
       def service_resource
         @service_resource ||= PoiseService::Resources::PoiseService::Resource.new(new_resource.name, run_context).tap do |r|
           # Set some defaults.
+          r.declared_type = :poise_service
           r.enclosing_provider = self
           r.source_line = new_resource.source_line
           r.service_name(new_resource.service_name)

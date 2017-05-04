@@ -150,6 +150,7 @@ describe PoiseService::ServiceMixin::Provider do
       allow(new_resource).to receive(:service_name).and_return('test')
       fake_poise_service = double('poise_service')
       expect(PoiseService::Resources::PoiseService::Resource).to receive(:new).with('test', nil).and_return(fake_poise_service)
+      expect(fake_poise_service).to receive(:declared_type=).with(:poise_service)
       expect(fake_poise_service).to receive(:enclosing_provider=).with(subject)
       expect(fake_poise_service).to receive(:source_line=).with('path.rb:1')
       expect(fake_poise_service).to receive(:service_name).with('test')

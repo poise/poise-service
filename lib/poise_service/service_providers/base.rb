@@ -141,6 +141,7 @@ module PoiseService
       # restart actions.
       def service_resource
         @service_resource ||= Chef::Resource::Service.new(new_resource.service_name, run_context).tap do |r|
+          r.declared_type = :service
           r.enclosing_provider = self
           r.source_line = new_resource.source_line
           r.supports(status: true, restart: true, reload: true)
