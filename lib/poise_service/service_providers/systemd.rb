@@ -75,6 +75,7 @@ module PoiseService
       def destroy_service
         reloader = systemctl_daemon_reload
         file "/etc/systemd/system/#{new_resource.service_name}.service" do
+          notifies :run, reloader, :immediately if options['auto_reload']
           action :delete
           notifies :run, reloader, :immediately if options['auto_reload']
         end
